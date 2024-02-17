@@ -21,8 +21,33 @@ NOKIA_FONT_MD_HEIGHT  = 10
 NOKIA_FONT_SM         = -8.5
 NOKIA_FONT_SM_HEIGHT  = 5
 
-NOKIA_FONT_PATH       = 'fonts/lowrez.ttf'
+# NOKIA_FONT_PATH       = 'fonts/lowrez.ttf'
+# NOKIA_FONT_PATH       = 'fonts/cg-pixel-3-5.ttf'
+NOKIA_FONT_PATH       = 'fonts/cg-pixel-4-5.ttf'
 
+# Original
+# #C7F0D8
+# #43523D
+
+# Harsh
+# #9BC700
+# #2B3F09
+
+# Gray
+# #879188
+# #1a1914
+
+# Original
+# NOKIA_FG_COLOR        = { r: 0xC7, g: 0xF0, b: 0xD8 }
+# NOKIA_BG_COLOR        = { r: 0x43, g: 0x52, b: 0x3D }
+
+# Harsh
+# NOKIA_FG_COLOR        = { r: 0x9B, g: 0xC7, b: 0x00 }
+# NOKIA_BG_COLOR        = { r: 0x2B, g: 0x3F, b: 0x09 }
+
+# Gray
+NOKIA_FG_COLOR        = { r: 0x87, g: 0x91, b: 0x88 }
+NOKIA_BG_COLOR        = { r: 0x1a, g: 0x19, b: 0x14 }
 
 class NokiaOutputs
   attr_accessor :width, :height
@@ -135,9 +160,9 @@ module GTK
            .each do |l|
         l.y  += 1
         if (l.a || 255) > 128
-          l.r = 67
-          l.g = 82
-          l.b = 61
+          l.r = NOKIA_BG_COLOR.r
+          l.g = NOKIA_BG_COLOR.g
+          l.b = NOKIA_BG_COLOR.b
           l.a = 255
         else
           l.a = 0
@@ -158,9 +183,9 @@ module GTK
            .solids
            .each do |s|
         if (s.a || 255) > 128
-          s.r = 67
-          s.g = 82
-          s.b = 61
+          s.r = NOKIA_BG_COLOR.r
+          s.g = NOKIA_BG_COLOR.g
+          s.b = NOKIA_BG_COLOR.b
           s.a = 255
         else
           s.a = 0
@@ -171,9 +196,9 @@ module GTK
            .borders
            .each do |s|
         if (s.a || 255) > 128
-          s.r = 67
-          s.g = 82
-          s.b = 61
+          s.r = NOKIA_BG_COLOR.r
+          s.g = NOKIA_BG_COLOR.g
+          s.b = NOKIA_BG_COLOR.b
           s.a = 255
         else
           s.a = 0
@@ -189,9 +214,9 @@ module GTK
         l.x2 += 1 if l.x1 != l.x2
 
         if (l.a || 255) > 128
-          l.r = 67
-          l.g = 82
-          l.b = 61
+          l.r = NOKIA_BG_COLOR.r
+          l.g = NOKIA_BG_COLOR.g
+          l.b = NOKIA_BG_COLOR.b
           l.a = 255
         else
           l.a = 0
@@ -206,9 +231,7 @@ module GTK
         r: 128, g: 128, b: 128
       }
 
-
-      @args.outputs.background_color = [199, 240, 216]
-
+      @args.outputs.background_color = [NOKIA_FG_COLOR.r, NOKIA_FG_COLOR.g, NOKIA_FG_COLOR.b]
       @args.outputs.solids << [0, 0, NOKIA_X_OFFSET, 720]
       @args.outputs.solids << [0, 0, 1280, NOKIA_Y_OFFSET]
       @args.outputs.solids << [NOKIA_X_OFFSET + NOKIA_ZOOMED_WIDTH, 0, NOKIA_X_OFFSET, 720]
@@ -224,7 +247,8 @@ module GTK
                          source_w: NOKIA_WIDTH,
                          source_h: NOKIA_HEIGHT,
                          path: :nokia }
-
+      # enable this here instead, skip drawing lines
+      @args.state.overlay_rendered = true
       if !@args.state.overlay_rendered
         (NOKIA_HEIGHT + 1).map_with_index do |i|
           @args.outputs.static_lines << {
@@ -232,9 +256,9 @@ module GTK
             y:  NOKIA_Y_OFFSET + (i * NOKIA_ZOOM),
             x2: NOKIA_X_OFFSET + NOKIA_ZOOMED_WIDTH,
             y2: NOKIA_Y_OFFSET + (i * NOKIA_ZOOM),
-            r: 199,
-            g: 240,
-            b: 216,
+            r: NOKIA_FG_COLOR.r,
+            g: NOKIA_FG_COLOR.g,
+            b: NOKIA_FG_COLOR.b,
             a: 100
           }.line!
         end
@@ -245,14 +269,13 @@ module GTK
             y:  NOKIA_Y_OFFSET,
             x2: NOKIA_X_OFFSET + (i * NOKIA_ZOOM),
             y2: NOKIA_Y_OFFSET + NOKIA_ZOOMED_HEIGHT,
-            r: 199,
-            g: 240,
-            b: 216,
+            r: NOKIA_FG_COLOR.r,
+            g: NOKIA_FG_COLOR.g,
+            b: NOKIA_FG_COLOR.b,
             a: 100
           }.line!
         end
-
-        @args.state.overlay_rendered = true
+        # @args.state.overlay_rendered = true
       end
     end
   end
