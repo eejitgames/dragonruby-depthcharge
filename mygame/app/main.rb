@@ -58,6 +58,8 @@ def tick_game_scene args
     end
     move_ship_sprite args if args.state.tick_count % args.state.ship_speed == 0
     draw_ship_sprite args
+    move_subs args if args.state.tick_count % 2 == 0
+    draw_subs args
   end
 
   if args.inputs.mouse.click
@@ -78,7 +80,7 @@ def draw_ship_sprite args
   # args.nokia.sprites << { x: 42, y: 24, w: 10, h: 5, path: 'sprites/sub_gray.png' }
   # args.nokia.sprites << { x: 42, y: 18, w: 10, h: 5, path: 'sprites/sub_gray.png' }
   # args.nokia.sprites << { x: 42, y: 12, w: 10, h: 5, path: 'sprites/sub_gray.png' }
-  args.nokia.sprites << { x: 42, y: 6, w: 10, h: 5, path: 'sprites/sub_gray.png' }
+  # args.nokia.sprites << { x: 42, y: 6, w: 10, h: 5, path: 'sprites/sub_gray.png' }
   # args.nokia.sprites << { x: 42, y: 0, w: 10, h: 5, path: 'sprites/sub_gray.png' }
 end
 
@@ -89,6 +91,62 @@ def tick_game_over_scene args
     args.state.next_scene = :title_scene
     args.state.defaults_set = false
   end
+end
+
+def move_subs args
+  a = args.state.subs
+  l = a.length
+  i = 0
+  while i < l
+    move_single_sub(a[i])
+    i += 1
+  end
+end
+
+def move_single_sub sub
+  # multiple sprites inspiration from 03_rendering_sprites/01_animation_using_separate_pngs sample
+  unless @game_paused
+    sub.x += sub[:s]
+  end
+  if sub[:s] > 0
+    if sub.x > 84
+      sub.x = 0 # sub.x = -1280 * rand
+      # sub[:s] = 4 * rand + 1
+    end
+  else
+    if sub.x < -128
+      sub.x = 1280 * rand + 1280
+      sub[:s] = -4 * rand
+    end
+  end
+end
+
+def draw_subs args
+  args.nokia.sprites << args.state.subs
+end
+
+def new_sub(range_x, coor_y)
+  #if rand < 0.5
+  #  {
+  #    x: ((range_x.randomize :ratio) * -1) - 128,
+  #    y: coor_y,
+  #    w: 10,
+  #    h: 5,
+  #    path: "sprites/sub_gray.png",
+  #    s: 0.1,
+  #    flip_horizontally: true
+  #  }
+  #else
+    {
+      x: 0, #(range_x.randomize :ratio) + 1280 + 128,
+      y: coor_y,
+      w: 10,
+      h: 5,
+      path: "sprites/sub_gray.png",
+      s: 0.1,
+      flip_horizontally: false
+    }
+  #end
 end
 
 def set_defaults args
@@ -104,4 +162,6 @@ def set_defaults args
   args.state.ship_speed = 4
   args.state.ship_x = 33
   args.state.game_paused = false
+  args.state.subs = 5.map { |i| new_sub(1280, (i * 6) + 6)}
+  puts "#{args.state.subs}"
 end
