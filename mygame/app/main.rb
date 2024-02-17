@@ -42,6 +42,7 @@ def tick_game_scene args
       args.state.game_paused = true
       args.nokia.labels << { x: 42, y: 47, text: "PAUSED", size_enum: NOKIA_FONT_SM, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
       draw_ship_sprite args
+      draw_subs args
     else
       args.state.game_paused = false
     if args.state.game_time < 0
@@ -58,7 +59,7 @@ def tick_game_scene args
     end
     move_ship_sprite args if args.state.tick_count % args.state.ship_speed == 0
     draw_ship_sprite args
-    move_subs args if args.state.tick_count % 2 == 0
+    move_subs args
     draw_subs args
   end
 
@@ -98,19 +99,19 @@ def move_subs args
   l = a.length
   i = 0
   while i < l
-    move_single_sub(a[i])
+    move_single_sub(args, a[i]) if args.state.tick_count % a[i].s == 0
     i += 1
   end
 end
 
-def move_single_sub sub
+def move_single_sub(args, sub)
   # multiple sprites inspiration from 03_rendering_sprites/01_animation_using_separate_pngs sample
-  unless @game_paused
-    sub.x += sub[:s]
+  unless args.state.game_paused
+    sub.x += 1
   end
   if sub[:s] > 0
     if sub.x > 84
-      sub.x = 0 # sub.x = -1280 * rand
+      sub.x = -10 # sub.x = -1280 * rand
       # sub[:s] = 4 * rand + 1
     end
   else
@@ -125,7 +126,8 @@ def draw_subs args
   args.nokia.sprites << args.state.subs
 end
 
-def new_sub(range_x, coor_y)
+def new_sub(range_x, coor_y, speed)
+  s = speed * 10
   #if rand < 0.5
   #  {
   #    x: ((range_x.randomize :ratio) * -1) - 128,
@@ -143,7 +145,7 @@ def new_sub(range_x, coor_y)
       w: 10,
       h: 5,
       path: "sprites/sub_gray.png",
-      s: 0.1,
+      s: s,
       flip_horizontally: false
     }
   #end
@@ -162,6 +164,5 @@ def set_defaults args
   args.state.ship_speed = 4
   args.state.ship_x = 33
   args.state.game_paused = false
-  args.state.subs = 5.map { |i| new_sub(1280, (i * 6) + 6)}
-  puts "#{args.state.subs}"
+  args.state.subs = 5.map { |i| new_sub(1280, (i * 6) + 6, 6 - i)}
 end
