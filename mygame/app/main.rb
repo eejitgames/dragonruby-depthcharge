@@ -70,37 +70,20 @@ def move_ship_sprite args
   args.state.ship_x += 1 if args.nokia.keyboard.right
   args.state.ship_x = 66 if args.state.ship_x > 66
   args.state.ship_x = 1 if args.state.ship_x < 1
-
-  args.audio[:boat] = nil
-  args.audio[:boat] = {
-  input: 'sounds/boat.ogg',       # Filename
-  x: 0.0, y: 0.0, z: 0.0,         # Relative position to the listener, x, y, z from -1.0 to 1.0
-  gain: 1.0,                      # Volume (0.0 to 1.0)
-  pitch: 1.0,                     # Pitch of the sound (1.0 = original pitch)
-  paused: false,                   # Set to true to pause the sound at the current playback position
-  looping: true,                  # Set to true to loop the sound/music until you stop it
-  }
 end
 
 def draw_ship_sprite args
   args.nokia.sprites << { x: args.state.ship_x, y: 36, w: 17, h: 6, path: 'sprites/ship_gray.png' }
-  # args.nokia.sprites << { x: args.state.ship_x, y: 36, w: 17, h: 6, path: 'sprites/ship_harsh.png' }
-  # args.nokia.sprites << { x: args.state.ship_x, y: 36, w: 17, h: 6, path: 'sprites/ship_original.png' }
   # args.nokia.sprites << { x: 42, y: 30, w: 10, h: 5, path: 'sprites/sub_gray.png' }
   # args.nokia.sprites << { x: 42, y: 24, w: 10, h: 5, path: 'sprites/sub_gray.png' }
   # args.nokia.sprites << { x: 42, y: 18, w: 10, h: 5, path: 'sprites/sub_gray.png' }
   # args.nokia.sprites << { x: 42, y: 12, w: 10, h: 5, path: 'sprites/sub_gray.png' }
   args.nokia.sprites << { x: 42, y: 6, w: 10, h: 5, path: 'sprites/sub_gray.png' }
-  # args.nokia.sprites << { x: 42, y: 6, w: 10, h: 5, path: 'sprites/sub_harsh.png' }
-  # args.nokia.sprites << { x: 42, y: 6, w: 10, h: 5, path: 'sprites/sub_original.png' }
   # args.nokia.sprites << { x: 42, y: 0, w: 10, h: 5, path: 'sprites/sub_gray.png' }
 end
 
 def tick_game_over_scene args
   args.nokia.labels << { x: 42, y: 47, text: "GAME OVER", size_enum: NOKIA_FONT_SM, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
-
-  # args.audio.delete(:boat)
-  # args.audio[:boat] = nil
 
   if args.inputs.mouse.click
     args.state.next_scene = :title_scene
@@ -121,13 +104,4 @@ def set_defaults args
   args.state.ship_speed = 4
   args.state.ship_x = 33
   args.state.game_paused = false
-
-  args.audio[:boat] = {
-  input: 'sounds/boat.ogg',       # Filename
-  x: 0.0, y: 0.0, z: 0.0,         # Relative position to the listener, x, y, z from -1.0 to 1.0
-  gain: 1.0,                      # Volume (0.0 to 1.0)
-  pitch: 1.0,                     # Pitch of the sound (1.0 = original pitch)
-  paused: false,                   # Set to true to pause the sound at the current playback position
-  looping: true,                  # Set to true to loop the sound/music until you stop it
-  }
 end
