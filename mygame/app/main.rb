@@ -61,6 +61,7 @@ def tick_game_scene args
     draw_ship_sprite args
     move_subs args if args.tick_count.zmod? 2
     draw_subs args
+    unpark_subs args if args.tick_count % 600 == 0
   end
 
   if args.inputs.mouse.click
@@ -104,6 +105,27 @@ def move_subs args
   end
 end
 
+def unpark_subs args
+  a = args.state.subs
+  l = a.length
+  i = 0
+  while i < l
+    unpark_sub(args, a[i]) if a[i].state == :park
+    i += 1
+  end
+end
+
+def unpark_sub(args, sub)
+  sub.state = :move
+  if rand < 0.5
+    sub.x = 84
+    sub.flip_horizontally = true
+  else
+    sub.x = -10
+    sub.flip_horizontally = false
+  end
+end
+
 def move_single_sub(args, sub)
   # multiple sprites inspiration from 03_rendering_sprites/01_animation_using_separate_pngs sample
   unless args.state.game_paused
@@ -128,7 +150,7 @@ def draw_subs args
 end
 
 def new_sub(coor_y, speed)
-  s = speed * 4 # 'higher' subs are faster
+  s = speed * 4
   if rand < 0.5
     {
       x: 84,
