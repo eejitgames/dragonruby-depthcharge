@@ -59,7 +59,7 @@ def tick_game_scene args
     end
     move_ship_sprite args if args.state.tick_count % args.state.ship_speed == 0
     draw_ship_sprite args
-    move_subs args
+    move_subs args if args.tick_count.zmod? 2
     draw_subs args
   end
 
