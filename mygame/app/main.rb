@@ -99,7 +99,7 @@ def move_subs args
   l = a.length
   i = 0
   while i < l
-    move_single_sub(args, a[i]) if args.state.tick_count % a[i].s == 0
+    move_single_sub(args, a[i]) if (args.state.tick_count.zmod? a[i].s) && a[i].state == :move
     i += 1
   end
 end
@@ -107,17 +107,18 @@ end
 def move_single_sub(args, sub)
   # multiple sprites inspiration from 03_rendering_sprites/01_animation_using_separate_pngs sample
   unless args.state.game_paused
-    sub.x += 1
-  end
-  if sub[:s] > 0
-    if sub.x > 84
-      sub.x = -10 # sub.x = -1280 * rand
-      # sub[:s] = 4 * rand + 1
-    end
-  else
-    if sub.x < -128
-      sub.x = 1280 * rand + 1280
-      sub[:s] = -4 * rand
+    if sub[:flip_horizontally]
+      sub.x -= 1
+      if sub.x < -10
+        sub.x = 84
+        sub.state = :park
+      end
+    else
+      sub.x += 1
+      if sub.x > 84
+        sub.x = -10
+        sub.state = :park
+      end
     end
   end
 end
@@ -126,31 +127,33 @@ def draw_subs args
   args.nokia.sprites << args.state.subs
 end
 
-def new_sub(range_x, coor_y, speed)
-  s = speed * 10
-  #if rand < 0.5
-  #  {
-  #    x: ((range_x.randomize :ratio) * -1) - 128,
-  #    y: coor_y,
-  #    w: 10,
-  #    h: 5,
-  #    path: "sprites/sub_gray.png",
-  #    s: 0.1,
-  #    flip_horizontally: true
-  #  }
-  #else
+def new_sub(coor_y, speed)
+  s = speed * 4 # 'higher' subs are faster
+  if rand < 0.5
     {
-      x: 0, #(range_x.randomize :ratio) + 1280 + 128,
+      x: 84,
       y: coor_y,
       w: 10,
       h: 5,
       path: "sprites/sub_gray.png",
       s: s,
-      flip_horizontally: false
+      flip_horizontally: true,
+      state: :move
     }
-  #end
+  else
+    {
+      x: -10,
+      y: coor_y,
+      w: 10,
+      h: 5,
+      path: "sprites/sub_gray.png",
+      s: s,
+      flip_horizontally: false,
+      state: :move
+    }
+  end
 end
-
+ 
 def set_defaults args
   args.state.defaults_set = true
   args.state.game_time = 60.seconds
@@ -164,5 +167,5 @@ def set_defaults args
   args.state.ship_speed = 4
   args.state.ship_x = 33
   args.state.game_paused = false
-  args.state.subs = 5.map { |i| new_sub(1280, (i * 6) + 6, 6 - i)}
+  args.state.subs = 5.map { |i| new_sub((i * 6) + 6, 5 - i)}
 end
