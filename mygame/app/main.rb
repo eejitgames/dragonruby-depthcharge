@@ -50,6 +50,7 @@ def tick_game_scene args
       args.state.game_over = true
     else
       args.state.game_time -= 1
+      args.state.game_tick_count += 1
       args.state.score += 1
       if args.state.score >= 500 && args.state.bonus == false
         args.state.bonus = true
@@ -57,11 +58,11 @@ def tick_game_scene args
       end
       args.state.score = 9999 if args.state.score > 9999
     end
-    move_ship_sprite args if args.state.tick_count % args.state.ship_speed == 0
+    move_ship_sprite args if args.state.tick_count.zmod? args.state.ship_speed # same as args.state.tick_count % args.state.ship_speed == 0
     draw_ship_sprite args
-    move_subs args if args.tick_count.zmod? 2
+    move_subs args if args.state.tick_count.zmod? 2
     draw_subs args
-    unpark_subs args if args.tick_count % 600 == 0
+    unpark_subs args if args.state.tick_count.zmod? 300
   end
 
   if args.inputs.mouse.click
@@ -106,11 +107,17 @@ def move_subs args
 end
 
 def unpark_subs args
+  # change this to start at the deepest water
+  # also only unpark one seb, then return
   a = args.state.subs
   l = a.length
   i = 0
   while i < l
-    unpark_sub(args, a[i]) if a[i].state == :park
+    if a[i].state == :park
+      break if i == 4 && rand < 0.2 # the topmost sub unparks less often
+      unpark_sub(args, a[i])
+      break
+    end
     i += 1
   end
 end
@@ -175,7 +182,7 @@ def new_sub(coor_y, speed)
     }
   end
 end
- 
+
 def set_defaults args
   args.state.defaults_set = true
   args.state.game_time = 60.seconds
@@ -189,5 +196,6 @@ def set_defaults args
   args.state.ship_speed = 4
   args.state.ship_x = 33
   args.state.game_paused = false
+  args.state.game_tick_count = args.state.tick_count
   args.state.subs = 5.map { |i| new_sub((i * 6) + 6, 5 - i)}
 end
