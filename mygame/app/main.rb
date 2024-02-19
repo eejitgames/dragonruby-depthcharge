@@ -63,6 +63,7 @@ def tick_game_scene args
     unless args.state.game_over
       move_subs args if args.state.tick_count.zmod? 2
     end
+    release_sub_bomb args if args.state.tick_count.zmod? 60
     draw_subs args
     unpark_subs args if args.state.tick_count.zmod? 300
   end
@@ -126,6 +127,15 @@ def unpark_sub(args, sub)
   else
     sub.x = -10
     sub.flip_horizontally = false
+  end
+end
+
+def release_sub_bomb args
+  # check if a sub is on the move
+  # if it is check if it's in a certain range on the x axis
+  # maybe rng now to decide should it release a bomb to float up
+  args.state.subs.each do |sub|
+  next unless sub.state == :move
   end
 end
 
