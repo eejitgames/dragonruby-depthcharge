@@ -139,7 +139,7 @@ def move_single_sub(args, sub)
   # multiple sprites inspiration from 03_rendering_sprites/01_animation_using_separate_pngs sample
   # fish.path = "sprites/fishGrayscale_#{fish.l.frame_index 2, 20, true, @my_tick_count}.png"
   unless args.state.game_paused
-    sub.path = "sprites/sub_gray_#{sub.time.frame_index 4, 20, true, args.state.game_tick_count}.png"
+    sub.path = "sprites/sub_gray_#{sub.start.frame_index 4, 60, true, args.state.game_tick_count}.png"
     if sub[:flip_horizontally]
       sub.x -= 1
       if sub.x < -10
@@ -172,7 +172,8 @@ def new_sub(args, coor_y, speed)
       s: s,
       flip_horizontally: true,
       state: :move,
-      time: args.state.game_tick_count
+      # rand(max - min +1) + min # min to max, inclusive of both
+      start: [0, 1, 3].sample
     }
   else
     {
@@ -184,7 +185,7 @@ def new_sub(args, coor_y, speed)
       s: s,
       flip_horizontally: false,
       state: :move,
-      time: args.state.game_tick_count
+      start: [0, 1, 3].sample
     }
   end
 end
@@ -204,4 +205,5 @@ def set_defaults args
   args.state.game_paused = false
   args.state.game_tick_count = args.state.tick_count
   args.state.subs = 5.map { |i| new_sub(args, (i * 6) + 6, 5 - i)}
+  putz "subs: #{args.state.subs}"
 end
