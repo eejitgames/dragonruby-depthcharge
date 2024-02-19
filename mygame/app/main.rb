@@ -81,12 +81,6 @@ end
 
 def draw_ship_sprite args
   args.nokia.sprites << { x: args.state.ship_x, y: 36, w: 17, h: 6, path: 'sprites/ship_gray.png' }
-  # args.nokia.sprites << { x: 42, y: 30, w: 10, h: 5, path: 'sprites/sub_gray.png' }
-  # args.nokia.sprites << { x: 42, y: 24, w: 10, h: 5, path: 'sprites/sub_gray.png' }
-  # args.nokia.sprites << { x: 42, y: 18, w: 10, h: 5, path: 'sprites/sub_gray.png' }
-  # args.nokia.sprites << { x: 42, y: 12, w: 10, h: 5, path: 'sprites/sub_gray.png' }
-  # args.nokia.sprites << { x: 42, y: 6, w: 10, h: 5, path: 'sprites/sub_gray.png' }
-  # args.nokia.sprites << { x: 42, y: 0, w: 10, h: 5, path: 'sprites/sub_gray.png' }
 end
 
 def tick_game_over_scene args
@@ -137,9 +131,8 @@ end
 
 def move_single_sub(args, sub)
   # multiple sprites inspiration from 03_rendering_sprites/01_animation_using_separate_pngs sample
-  # fish.path = "sprites/fishGrayscale_#{fish.l.frame_index 2, 20, true, @my_tick_count}.png"
   unless args.state.game_paused
-    sub.path = "sprites/sub_gray_#{sub.start.frame_index 4, 30 + (sub.s * 2), true, args.state.game_tick_count}.png"
+    sub.path = "sprites/sub_gray_#{sub.start.frame_index 4, sub.hold, true, args.state.game_tick_count}.png"
     if sub[:flip_horizontally]
       sub.x -= 1
       if sub.x < -10
@@ -163,30 +156,9 @@ end
 def new_sub(args, coor_y, speed)
   s = speed * 4
   if rand < 0.5
-    {
-      x: 84,
-      y: coor_y,
-      w: 10,
-      h: 5,
-      path: "sprites/sub_gray.png",
-      s: s,
-      flip_horizontally: true,
-      state: :move,
-      # rand(max - min +1) + min # min to max, inclusive of both
-      start: [0, 1, 3].sample * 30
-    }
+    { x: 84, y: coor_y, w: 10, h: 5, path: "sprites/sub_gray.png", s: s, flip_horizontally: true, state: :move, start: [0, 1, 3].sample * 30, hold: 30 + s * 3 }
   else
-    {
-      x: -10,
-      y: coor_y,
-      w: 10,
-      h: 5,
-      path: "sprites/sub_gray.png",
-      s: s,
-      flip_horizontally: false,
-      state: :move,
-      start: [0, 1, 3].sample * 30
-    }
+    { x: -10, y: coor_y, w: 10, h: 5, path: "sprites/sub_gray.png", s: s, flip_horizontally: false, state: :move, start: [0, 1, 3].sample * 30, hold: 30 + s * 3 }
   end
 end
 
@@ -205,5 +177,4 @@ def set_defaults args
   args.state.game_paused = false
   args.state.game_tick_count = args.state.tick_count
   args.state.subs = 5.map { |i| new_sub(args, (i * 6) + 6, 5 - i)}
-  putz "subs: #{args.state.subs}"
 end
