@@ -21,8 +21,10 @@ NOKIA_FONT_MD_HEIGHT  = 10
 NOKIA_FONT_SM         = -8.5
 NOKIA_FONT_SM_HEIGHT  = 5
 
-# NOKIA_FONT_PATH       = 'fonts/lowrez.ttf'
-# NOKIA_FONT_PATH       = 'fonts/cg-pixel-3-5.ttf'
+NOKIA_FONT_TI         = -8
+
+TINY_NOKIA_FONT_PATH  = 'fonts/tiny.ttf'
+SMALL_NOKIA_FONT_PATH = 'fonts/cg-pixel-3-5.ttf'
 NOKIA_FONT_PATH       = 'fonts/cg-pixel-4-5.ttf'
 
 # Original

@@ -23,7 +23,12 @@ def tick args
 end
 
 def tick_title_scene args
-  args.nokia.labels << { x: 43, y: 47, text: "DEPTH CHARGE", size_enum: NOKIA_FONT_SM, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
+  args.nokia.labels << { x: 43, y: 46, text: "DEPTH CHARGE", size_enum: NOKIA_FONT_SM, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
+  args.nokia.labels << { x: 4, y: 38, text: "To move left or right", size_enum: NOKIA_FONT_TI, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
+  args.nokia.labels << { x: 4, y: 32, text: "Use WASD or ARROWS", size_enum: NOKIA_FONT_TI, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
+  args.nokia.labels << { x: 4, y: 24, text: "Press down first to", size_enum: NOKIA_FONT_TI, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
+  args.nokia.labels << { x: 4, y: 18, text: "Launch a depthcharge", size_enum: NOKIA_FONT_TI, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
+  args.nokia.labels << { x: 42, y: 9, text: "Press ENTER", size_enum: NOKIA_FONT_TI, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
 
   if args.inputs.mouse.click
     args.state.next_scene = :game_scene
