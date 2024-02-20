@@ -3,9 +3,7 @@ $gtk.reset
 require 'app/nokia.rb'
 
 def tick args
-  # using both samples/99_genre_lowrez/nokia_3310 and
-  # samples/02_input_basics/07_managing_scenes (with some modification)
-  # as an initial sort of starting point/template
+  # using both samples/99_genre_lowrez/nokia_3310 and samples/02_input_basics/07_managing_scenes (with some modification) as an initial sort of starting point/template
   args.state.current_scene ||= :title_scene
   current_scene = args.state.current_scene
 
@@ -64,6 +62,9 @@ def tick_game_scene args
       move_subs args if args.state.tick_count.zmod? 2
     end
     release_sub_bomb args if args.state.tick_count.zmod? 60
+    draw_sub_bombs args
+    explode_sub_bombs args
+    move_sub_bombs args if args.state.tick_count.zmod? 60
     draw_subs args
     unpark_subs args if args.state.tick_count.zmod? 300
   end
@@ -104,8 +105,7 @@ def move_subs args
 end
 
 def unpark_subs args
-  # change this to start at the deepest water
-  # also only unpark one seb, then return
+  # change this to start at the deepest water, also only unpark one seb, then return
   a = args.state.subs
   l = a.length
   i = 0
@@ -130,13 +130,30 @@ def unpark_sub(args, sub)
   end
 end
 
-def release_sub_bomb args
-  # check if a sub is on the move
-  # if it is check if it's in a certain range on the x axis
-  # maybe rng now to decide should it release a bomb to float up
-  args.state.subs.each do |sub|
-  next unless sub.state == :move
+def move_sub_bombs args
+  args.state.sub_bombs.each do |bomb|
+    bomb.flip_horizontally = !bomb.flip_horizontally
+    bomb.y += 1
   end
+end
+
+def explode_sub_bombs args
+end
+
+def draw_sub_bombs args
+  args.nokia.sprites << args.state.sub_bombs
+end
+
+def release_sub_bomb args
+  # check if a sub is on the move, if it is check if it's in a certain range on the x axis, maybe rng now to decide should it release a bomb to float up
+  args.state.subs.each do |sub|
+    next unless sub.state == :move && sub.x > 4 && sub.x < 70 # only a sub moving in this range can potentially attack the ship
+    release_bomb(args, sub) if rand < 0.1
+  end
+end
+
+def release_bomb(args, sub)
+  args.state.sub_bombs << { x: sub.x, y: sub.y, w: 2, h: 2, path: "sprites/bomb.png", flip_horizontally: sub.flip_horizontally }
 end
 
 def move_single_sub(args, sub)
@@ -187,4 +204,5 @@ def set_defaults args
   args.state.game_paused = false
   args.state.game_tick_count = args.state.tick_count
   args.state.subs = 5.map { |i| new_sub(args, (i * 6) + 6, 5 - i)}
+  args.state.sub_bombs = []
 end
