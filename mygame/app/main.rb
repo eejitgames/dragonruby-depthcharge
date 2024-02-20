@@ -138,6 +138,9 @@ def move_sub_bombs args
 end
 
 def explode_sub_bombs args
+  args.state.sub_bombs.each do |bomb|
+    args.state.sub_bombs = args.state.sub_bombs - [bomb] if bomb.y > 33
+  end
 end
 
 def draw_sub_bombs args
