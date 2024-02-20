@@ -63,7 +63,7 @@ def tick_game_scene args
     end
     release_sub_bomb args if args.state.tick_count.zmod? 60
     draw_sub_bombs args
-    explode_sub_bombs args
+    explode_sub_bombs args if args.state.tick_count.zmod? 60
     move_sub_bombs args if args.state.tick_count.zmod? 60
     draw_subs args
     unpark_subs args if args.state.tick_count.zmod? 300
@@ -151,7 +151,7 @@ def release_sub_bomb args
   # check if a sub is on the move, if it is check if it's in a certain range on the x axis, maybe rng now to decide should it release a bomb to float up
   args.state.subs.each do |sub|
     next unless sub.state == :move && sub.x > 4 && sub.x < 70 # only a sub moving in this range can potentially attack the ship
-    release_bomb(args, sub) if rand < 0.1
+    release_bomb(args, sub) if rand < 0.15
   end
 end
 
