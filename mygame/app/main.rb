@@ -32,14 +32,15 @@ def tick_title_scene args
     looping: true,                    # Set to true to loop the sound/music until you stop it
   }
   args.audio[:title].paused = true
+  # puts60 "sounds that are paused: #{args.audio.select { |_, sound| sound[:paused] == true }.length}"
 
   args.nokia.labels << { x: 43, y: 45, text: "DEPTH CHARGE", size_enum: NOKIA_FONT_SM, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
   args.nokia.labels << { x: 4, y: 38, text: "To move left or right", size_enum: NOKIA_FONT_TI, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
-  args.nokia.labels << { x: 4, y: 32, text: "Use WASD or ARROWS", size_enum: NOKIA_FONT_TI, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
+  args.nokia.labels << { x: 4, y: 32, text: "use WASD or ARROWS", size_enum: NOKIA_FONT_TI, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
   args.nokia.labels << { x: 4, y: 24, text: "Press down first to", size_enum: NOKIA_FONT_TI, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
-  args.nokia.labels << { x: 4, y: 18, text: "Launch a depthcharge", size_enum: NOKIA_FONT_TI, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
+  args.nokia.labels << { x: 4, y: 18, text: "launch a depthcharge", size_enum: NOKIA_FONT_TI, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
   args.nokia.labels << { x: 42, y: 9, text: "Let's Go !", size_enum: NOKIA_FONT_TI, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
-  args.nokia.borders << { x: 18, y: 3, w: 46, h: 8, a: 255 }
+  args.nokia.borders << { x: 19, y: 3, w: 45, h: 8, a: 255 }
 
   if args.inputs.mouse.click
     args.state.next_scene = :game_scene
