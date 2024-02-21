@@ -106,8 +106,8 @@ def tick_game_scene args
 end
 
 def move_ship_sprite args
-  args.state.ship_x -= 1 if args.nokia.keyboard.key_up.left
-  args.state.ship_x += 1 if args.nokia.keyboard.key_up.right
+  args.state.ship_x -= 1 if args.nokia.keyboard.left
+  args.state.ship_x += 1 if args.nokia.keyboard.right
   args.state.ship_x = 66 if args.state.ship_x > 66
   args.state.ship_x = 1 if args.state.ship_x < 1
 end
