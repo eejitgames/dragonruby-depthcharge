@@ -1,4 +1,5 @@
 $gtk.reset
+$gtk.hide_cursor
 
 require 'app/nokia.rb'
 
