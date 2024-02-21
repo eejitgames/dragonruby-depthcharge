@@ -79,7 +79,7 @@ def tick_game_scene args
     else
       args.state.game_time -= 1
       args.state.game_tick_count += 1
-      args.state.score += 1
+      # args.state.score += 1
       if args.state.score >= 500 && args.state.bonus == false
         args.state.bonus = true
         args.state.game_time += args.state.bonus_time
