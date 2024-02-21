@@ -23,12 +23,23 @@ def tick args
 end
 
 def tick_title_scene args
-  args.nokia.labels << { x: 43, y: 46, text: "DEPTH CHARGE", size_enum: NOKIA_FONT_SM, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
+   args.audio[:title] ||= {
+    input: 'sounds/title-theme.ogg',  # Filename
+    x: 0.0, y: 0.0, z: 0.0,           # Relative position to the listener, x, y, z from -1.0 to 1.0
+    gain: 1.0,                        # Volume (0.0 to 1.0)
+    pitch: 1.0,                       # Pitch of the sound (1.0 = original pitch)
+    paused: false,                    # Set to true to pause the sound at the current playback position
+    looping: true,                    # Set to true to loop the sound/music until you stop it
+  }
+  args.audio[:title].paused = true
+
+  args.nokia.labels << { x: 43, y: 45, text: "DEPTH CHARGE", size_enum: NOKIA_FONT_SM, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
   args.nokia.labels << { x: 4, y: 38, text: "To move left or right", size_enum: NOKIA_FONT_TI, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
   args.nokia.labels << { x: 4, y: 32, text: "Use WASD or ARROWS", size_enum: NOKIA_FONT_TI, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
   args.nokia.labels << { x: 4, y: 24, text: "Press down first to", size_enum: NOKIA_FONT_TI, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
   args.nokia.labels << { x: 4, y: 18, text: "Launch a depthcharge", size_enum: NOKIA_FONT_TI, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
-  args.nokia.labels << { x: 42, y: 9, text: "Press ENTER", size_enum: NOKIA_FONT_TI, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
+  args.nokia.labels << { x: 42, y: 9, text: "Let's Go !", size_enum: NOKIA_FONT_TI, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
+  args.nokia.borders << { x: 18, y: 3, w: 46, h: 8, a: 255 }
 
   if args.inputs.mouse.click
     args.state.next_scene = :game_scene
