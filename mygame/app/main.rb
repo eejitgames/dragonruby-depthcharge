@@ -31,7 +31,6 @@ def tick_title_scene args
     paused: false,                    # Set to true to pause the sound at the current playback position
     looping: true,                    # Set to true to loop the sound/music until you stop it
   }
-  args.audio[:title].paused = true
   # puts60 "sounds that are paused: #{args.audio.select { |_, sound| sound[:paused] == true }.length}"
 
   args.nokia.labels << { x: 43, y: 45, text: "DEPTH CHARGE", size_enum: NOKIA_FONT_SM, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
@@ -42,7 +41,9 @@ def tick_title_scene args
   args.nokia.labels << { x: 42, y: 9, text: "Let's Go !", size_enum: NOKIA_FONT_TI, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
   args.nokia.borders << { x: 19, y: 3, w: 45, h: 8, a: 255 }
 
-  if args.inputs.mouse.click
+  if args.inputs.keyboard.key_up.space || args.inputs.keyboard.key_up.enter
+    args.audio[:title].paused = true
+    args.audio[:title].playtime = 0
     args.state.next_scene = :game_scene
     set_defaults args if args.state.defaults_set != true
   end
@@ -57,6 +58,7 @@ def tick_game_scene args
       args.state.game_paused = true
       args.nokia.labels << { x: 42, y: 47, text: "PAUSED", size_enum: NOKIA_FONT_SM, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
       draw_ship_sprite args
+      draw_sub_bombs args
       draw_subs args
     else
       args.state.game_paused = false
@@ -86,14 +88,14 @@ def tick_game_scene args
     unpark_subs args if args.state.tick_count.zmod? 300
   end
 
-  if args.inputs.mouse.click
+  if args.inputs.keyboard.key_up.space || args.inputs.keyboard.key_up.enter
     args.state.next_scene = :game_over_scene
   end
 end
 
 def move_ship_sprite args
-  args.state.ship_x -= 1 if args.nokia.keyboard.left
-  args.state.ship_x += 1 if args.nokia.keyboard.right
+  args.state.ship_x -= 1 if args.nokia.keyboard.key_up.left
+  args.state.ship_x += 1 if args.nokia.keyboard.key_up.right
   args.state.ship_x = 66 if args.state.ship_x > 66
   args.state.ship_x = 1 if args.state.ship_x < 1
 end
@@ -105,7 +107,8 @@ end
 def tick_game_over_scene args
   args.nokia.labels << { x: 42, y: 47, text: "GAME OVER", size_enum: NOKIA_FONT_SM, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
 
-  if args.inputs.mouse.click
+  if args.inputs.keyboard.key_up.space || args.inputs.keyboard.key_up.enter
+    args.audio[:title].paused = false
     args.state.next_scene = :title_scene
     args.state.defaults_set = false
   end
@@ -167,7 +170,7 @@ end
 def release_sub_bomb args
   # check if a sub is on the move, if it is check if it's in a certain range on the x axis, maybe rng now to decide should it release a bomb to float up
   args.state.subs.each do |sub|
-    next unless sub.state == :move && sub.x > 4 && sub.x < 70 # only a sub moving in this range can potentially attack the ship
+    next unless sub.state == :move && sub.x > 1 && sub.x < 81 && sub.x % 2 == 0 # only a sub moving in this range can potentially attack the ship
     release_bomb(args, sub) if rand < 0.15
   end
 end
