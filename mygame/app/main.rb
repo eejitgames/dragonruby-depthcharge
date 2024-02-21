@@ -23,7 +23,7 @@ def tick args
 end
 
 def tick_title_scene args
-   args.audio[:title] ||= {
+  args.audio[:title] ||= {
     input: 'sounds/title-theme.ogg',  # Filename
     x: 0.0, y: 0.0, z: 0.0,           # Relative position to the listener, x, y, z from -1.0 to 1.0
     gain: 1.0,                        # Volume (0.0 to 1.0)
@@ -31,8 +31,15 @@ def tick_title_scene args
     paused: false,                    # Set to true to pause the sound at the current playback position
     looping: true,                    # Set to true to loop the sound/music until you stop it
   }
+  args.audio[:play] ||= {
+    input: 'sounds/game-play.ogg',    # Filename
+    x: 0.0, y: 0.0, z: 0.0,           # Relative position to the listener, x, y, z from -1.0 to 1.0
+    gain: 1.0,                        # Volume (0.0 to 1.0)
+    pitch: 1.0,                       # Pitch of the sound (1.0 = original pitch)
+    paused: true,                     # Set to true to pause the sound at the current playback position
+    looping: true,                    # Set to true to loop the sound/music until you stop it
+  }
   # puts60 "sounds that are paused: #{args.audio.select { |_, sound| sound[:paused] == true }.length}"
-
   args.nokia.labels << { x: 43, y: 45, text: "DEPTH CHARGE", size_enum: NOKIA_FONT_SM, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
   args.nokia.labels << { x: 4, y: 38, text: "To move left or right", size_enum: NOKIA_FONT_TI, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
   args.nokia.labels << { x: 4, y: 32, text: "use WASD or ARROWS", size_enum: NOKIA_FONT_TI, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
@@ -44,6 +51,7 @@ def tick_title_scene args
   if args.inputs.keyboard.key_up.space || args.inputs.keyboard.key_up.enter
     args.audio[:title].paused = true
     args.audio[:title].playtime = 0
+    args.audio[:play].paused = false
     args.state.next_scene = :game_scene
     set_defaults args if args.state.defaults_set != true
   end
@@ -55,12 +63,14 @@ def tick_game_scene args
   args.nokia.labels  << { x: 84, y: 47, text: "#{args.state.score}", size_enum: NOKIA_FONT_SM, alignment_enum: 2, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
 
   if !args.inputs.keyboard.has_focus && args.state.tick_count != 0
+      args.audio[:play].paused = true
       args.state.game_paused = true
       args.nokia.labels << { x: 42, y: 47, text: "PAUSED", size_enum: NOKIA_FONT_SM, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
       draw_ship_sprite args
       draw_sub_bombs args
       draw_subs args
     else
+      args.audio[:play].paused = false
       args.state.game_paused = false
     if args.state.game_time < 0
       args.state.game_time = 0
@@ -89,6 +99,8 @@ def tick_game_scene args
   end
 
   if args.inputs.keyboard.key_up.space || args.inputs.keyboard.key_up.enter
+    args.audio[:play].playtime = 0
+    args.audio[:play].paused = true
     args.state.next_scene = :game_over_scene
   end
 end
