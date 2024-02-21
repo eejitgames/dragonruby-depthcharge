@@ -219,9 +219,9 @@ end
 def new_sub(args, coor_y, speed)
   s = speed * 4
   if rand < 0.5
-    { x: 84, y: coor_y, w: 10, h: 5, path: "sprites/sub_gray.png", s: s, flip_horizontally: true, state: :move, start: [0, 1, 3].sample * 30, hold: 30 + s * 3 }
+    { x: 84, y: coor_y, w: 10, h: 5, path: "sprites/sub_gray.png", s: s, flip_horizontally: true, state: :park, start: [0, 1, 3].sample * 30, hold: 30 + s * 3 }
   else
-    { x: -10, y: coor_y, w: 10, h: 5, path: "sprites/sub_gray.png", s: s, flip_horizontally: false, state: :move, start: [0, 1, 3].sample * 30, hold: 30 + s * 3 }
+    { x: -10, y: coor_y, w: 10, h: 5, path: "sprites/sub_gray.png", s: s, flip_horizontally: false, state: :park, start: [0, 1, 3].sample * 30, hold: 30 + s * 3 }
   end
 end
 
