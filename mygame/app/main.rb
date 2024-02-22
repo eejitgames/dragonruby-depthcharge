@@ -35,7 +35,7 @@ def tick_title_scene args
   args.audio[:play] ||= {
     input: 'sounds/game-play.ogg',    # Filename
     x: 0.0, y: 0.0, z: 0.0,           # Relative position to the listener, x, y, z from -1.0 to 1.0
-    gain: 1.0,                        # Volume (0.0 to 1.0)
+    gain: 0.9 ,                        # Volume (0.0 to 1.0)
     pitch: 1.0,                       # Pitch of the sound (1.0 = original pitch)
     paused: true,                     # Set to true to pause the sound at the current playback position
     looping: true,                    # Set to true to loop the sound/music until you stop it
@@ -60,47 +60,41 @@ end
 
 def tick_game_scene args
   args.nokia.solids  << { x: 0, y: 0, w: 84, h: 36 }
+  args.state.score = 9999 if args.state.score > 9999
   args.nokia.labels  << { x: 1, y: 47, text: "#{(args.state.game_time/60).round}", size_enum: NOKIA_FONT_SM, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
   args.nokia.labels  << { x: 84, y: 47, text: "#{args.state.score}", size_enum: NOKIA_FONT_SM, alignment_enum: 2, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
 
   if !args.inputs.keyboard.has_focus && args.state.tick_count != 0
-      args.audio[:play].paused = true
-      args.state.game_paused = true
-      args.nokia.labels << { x: 42, y: 47, text: "PAUSED", size_enum: NOKIA_FONT_SM, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
-      draw_ship_sprite args
-      draw_sub_bombs args
-      draw_subs args
-    else
-      args.audio[:play].paused = false
-      args.state.game_paused = false
-    if args.state.game_time < 0
-      args.state.game_time = 0
-      args.state.game_over = true
-    else
-      args.state.game_time -= 1
-      args.state.game_tick_count += 1
-      # args.state.score += 1
-      if args.state.score >= 500 && args.state.bonus == false
-        args.state.bonus = true
-        args.state.game_time += args.state.bonus_time
-      end
-      args.state.score = 9999 if args.state.score > 9999
-    end
-    unless args.state.game_over
-      move_ship_sprite args if args.state.tick_count.zmod? args.state.ship_speed # same as args.state.tick_count % args.state.ship_speed == 0
-    end
+    args.audio[:play].paused = true
+    args.state.game_paused = true
+    args.nokia.labels << { x: 42, y: 47, text: "PAUSED", size_enum: NOKIA_FONT_SM, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
     draw_ship_sprite args
-    unless args.state.game_over
-      move_subs args if args.state.tick_count.zmod? 2
-    end
-    release_sub_bomb args if args.state.tick_count.zmod? 60
     draw_sub_bombs args
-    unless args.state.game_over
-      explode_sub_bombs args if args.state.tick_count.zmod? 60
-      move_sub_bombs args if args.state.tick_count.zmod? 60
-    end
     draw_subs args
-    unpark_subs args if args.state.tick_count.zmod? 300
+  else
+    args.audio[:play].paused = false
+    args.state.game_paused = false
+  end
+
+  if args.state.score >= 500 && args.state.bonus == false
+    args.state.bonus = true
+    args.state.game_time += args.state.bonus_time
+  end
+
+  if args.state.game_time < 0
+    args.state.game_time = 0
+    args.state.game_over = true
+    args.audio[:play].playtime = 0
+    args.audio[:play].paused = true
+  end
+
+  if args.state.game_paused == false && args.state.game_over == false
+    args.state.game_time -= 1
+    args.state.game_tick_count += 1
+    game_loop args
+  else
+    args.audio[:play].paused = true
+    draw_stuff args
   end
 
   if args.inputs.keyboard.key_up.space || args.inputs.keyboard.key_up.enter
@@ -108,6 +102,24 @@ def tick_game_scene args
     args.audio[:play].paused = true
     args.state.next_scene = :game_over_scene
   end
+end
+
+def game_loop args
+  move_ship_sprite args if args.state.tick_count.zmod? args.state.ship_speed # same as args.state.tick_count % args.state.ship_speed == 0
+  draw_ship_sprite args
+  move_subs args if args.state.tick_count.zmod? 2
+  release_sub_bomb args if args.state.tick_count.zmod? 60
+  draw_sub_bombs args
+  explode_sub_bombs args if args.state.tick_count.zmod? 60
+  move_sub_bombs args if args.state.tick_count.zmod? 60
+  draw_subs args
+  unpark_subs args if args.state.tick_count.zmod? 300
+end
+
+def draw_stuff args
+  draw_ship_sprite args
+  draw_sub_bombs args
+  draw_subs args
 end
 
 def move_ship_sprite args
