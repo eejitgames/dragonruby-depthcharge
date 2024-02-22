@@ -67,7 +67,7 @@ def tick_game_scene args
   if !args.inputs.keyboard.has_focus && args.state.tick_count != 0
     args.audio[:play].paused = true
     args.state.game_paused = true
-    args.nokia.labels << { x: 42, y: 47, text: "PAUSED", size_enum: NOKIA_FONT_SM, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
+    args.nokia.labels << { x: 42, y: 47, text: "PAUSED", size_enum: NOKIA_FONT_SM, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH } unless args.state.game_over == true
     draw_ship_sprite args
     draw_sub_bombs args
     draw_subs args
@@ -188,7 +188,10 @@ end
 
 def explode_sub_bombs args
   args.state.sub_bombs.each do |bomb|
-    args.state.sub_bombs = args.state.sub_bombs - [bomb] if bomb.y > 33
+    if bomb.y > 33
+      args.state.sub_bombs = args.state.sub_bombs - [bomb]
+      bomb_explosion(args, bomb)
+    end
   end
 end
 
@@ -199,7 +202,7 @@ end
 def release_sub_bomb args
   # check if a sub is on the move, if it is check if it's in a certain range on the x axis, maybe rng now to decide should it release a bomb to float up
   args.state.subs.each do |sub|
-    next unless sub.state == :move && sub.x > 1 && sub.x < 81 && sub.x % 2 == 0 # only a sub moving in this range can potentially attack the ship
+    next unless sub.state == :move && sub.x > 1 && sub.x < 81 # only a sub moving in this range can potentially attack the ship
     release_bomb(args, sub) if rand < 0.15
   end
 end
@@ -208,22 +211,20 @@ def release_bomb(args, sub)
   args.state.sub_bombs << { x: sub.x, y: sub.y, w: 2, h: 2, path: "sprites/bomb.png", flip_horizontally: sub.flip_horizontally }
 end
 
+def bomb_explosion(args, bomb)
+
+end
+
 def move_single_sub(args, sub)
   # multiple sprites inspiration from 03_rendering_sprites/01_animation_using_separate_pngs sample
   unless args.state.game_paused
     sub.path = "sprites/sub_gray_#{sub.start.frame_index 4, sub.hold, true, args.state.game_tick_count}.png"
     if sub[:flip_horizontally]
       sub.x -= 1
-      if sub.x < -10
-        sub.x = 84
-        sub.state = :park
-      end
+      sub.state = :park if sub.x < -10
     else
       sub.x += 1
-      if sub.x > 84
-        sub.x = -10
-        sub.state = :park
-      end
+      sub.state = :park if sub.x > 84
     end
   end
 end
@@ -257,4 +258,5 @@ def set_defaults args
   args.state.game_tick_count = args.state.tick_count
   args.state.subs = 5.map { |i| new_sub(args, (i * 6) + 6, 5 - i)}
   args.state.sub_bombs = []
+  args.state.sub_bomb_explosions = []
 end
