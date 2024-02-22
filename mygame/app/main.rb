@@ -86,15 +86,19 @@ def tick_game_scene args
       end
       args.state.score = 9999 if args.state.score > 9999
     end
-    move_ship_sprite args if args.state.tick_count.zmod? args.state.ship_speed # same as args.state.tick_count % args.state.ship_speed == 0
+    unless args.state.game_over
+      move_ship_sprite args if args.state.tick_count.zmod? args.state.ship_speed # same as args.state.tick_count % args.state.ship_speed == 0
+    end
     draw_ship_sprite args
     unless args.state.game_over
       move_subs args if args.state.tick_count.zmod? 2
     end
     release_sub_bomb args if args.state.tick_count.zmod? 60
     draw_sub_bombs args
-    explode_sub_bombs args if args.state.tick_count.zmod? 60
-    move_sub_bombs args if args.state.tick_count.zmod? 60
+    unless args.state.game_over
+      explode_sub_bombs args if args.state.tick_count.zmod? 60
+      move_sub_bombs args if args.state.tick_count.zmod? 60
+    end
     draw_subs args
     unpark_subs args if args.state.tick_count.zmod? 300
   end
