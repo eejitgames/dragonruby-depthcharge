@@ -67,7 +67,6 @@ def tick_title_scene args
 end
 
 def tick_game_scene args
-  args.nokia.solids  << { x: 0, y: 0, w: 84, h: 36 }
   args.state.score = 9999 if args.state.score > 9999
   args.nokia.labels  << { x: 1, y: 47, text: "#{(args.state.game_time/60).round}", size_enum: NOKIA_FONT_SM, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
   args.nokia.labels  << { x: 84, y: 47, text: "#{args.state.score}", size_enum: NOKIA_FONT_SM, alignment_enum: 2, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
@@ -102,7 +101,7 @@ def tick_game_scene args
       args.state.game_tick_count += 1
     end
     if args.state.ship.state == :hit
-
+      args.state.ship.y -= 1 if args.state.tick_count.zmod? 15
     end
     game_loop args
   else
@@ -110,7 +109,8 @@ def tick_game_scene args
     draw_stuff args
   end
 
-  if args.inputs.keyboard.key_up.space || args.inputs.keyboard.key_up.enter
+  if args.inputs.keyboard.key_up.space || args.inputs.keyboard.key_up.enter || args.state.ship.y < 30
+    args.state.ship.state = :sunk
     args.audio[:play].playtime = 0
     args.audio[:play].paused = true
     args.state.next_scene = :game_over_scene
@@ -144,11 +144,15 @@ def move_ship_sprite args
 end
 
 def draw_ship_sprite args
-  args.nokia.sprites << { x: args.state.ship.x, y: 36, w: 17, h: 6, path: 'sprites/ship_gray.png' }
+  args.nokia.primitives << { x: args.state.ship.x, y: args.state.ship.y, w: 17, h: 6, path: 'sprites/ship_gray.png' }
+  args.nokia.primitives << { x: 0, y: 0, w: 84, h: 36, r: NOKIA_BG_COLOR.r, g: NOKIA_BG_COLOR.g, b: NOKIA_BG_COLOR.b, primitive_marker: :solid }
 end
 
 def tick_game_over_scene args
+  args.nokia.labels  << { x: 1, y: 47, text: "#{(args.state.game_time/60).round}", size_enum: NOKIA_FONT_SM, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
+  args.nokia.labels  << { x: 84, y: 47, text: "#{args.state.score}", size_enum: NOKIA_FONT_SM, alignment_enum: 2, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
   args.nokia.labels << { x: 42, y: 47, text: "GAME OVER", size_enum: NOKIA_FONT_SM, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
+  draw_stuff args
 
   if args.inputs.keyboard.key_up.space || args.inputs.keyboard.key_up.enter
     args.audio[:title].paused = false
@@ -215,7 +219,7 @@ def explode_sub_bombs args
 end
 
 def draw_sub_bombs args
-  args.nokia.sprites << args.state.sub_bombs
+  args.nokia.primitives << args.state.sub_bombs
 end
 
 def release_sub_bomb args
@@ -244,7 +248,7 @@ def move_single_sub(args, sub)
 end
 
 def draw_subs args
-  args.nokia.sprites << args.state.subs
+  args.nokia.primitives << args.state.subs
 end
 
 def new_bomb_explosion args
@@ -267,6 +271,7 @@ def set_defaults args
   args.state.ship.state = :alive
   args.state.ship.speed = 4
   args.state.ship.x = 33
+  args.state.ship.y = 36
   args.state.game_paused = false
   args.state.sub_bombs_maximum = 10
   args.state.game_tick_count = args.state.tick_count
