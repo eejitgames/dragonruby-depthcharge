@@ -190,7 +190,7 @@ def explode_sub_bombs args
   args.state.sub_bombs.each do |bomb|
     if bomb.y > 33
       args.state.sub_bombs = args.state.sub_bombs - [bomb]
-      bomb_explosion(args, bomb)
+      explode_bomb(args, bomb)
     end
   end
 end
@@ -211,7 +211,7 @@ def release_bomb(args, sub)
   args.state.sub_bombs << { x: sub.x, y: sub.y, w: 2, h: 2, path: "sprites/bomb.png", flip_horizontally: sub.flip_horizontally }
 end
 
-def bomb_explosion(args, bomb)
+def explode_bomb(args, bomb)
 
 end
 
@@ -219,13 +219,8 @@ def move_single_sub(args, sub)
   # multiple sprites inspiration from 03_rendering_sprites/01_animation_using_separate_pngs sample
   unless args.state.game_paused
     sub.path = "sprites/sub_gray_#{sub.start.frame_index 4, sub.hold, true, args.state.game_tick_count}.png"
-    if sub[:flip_horizontally]
-      sub.x -= 1
-      sub.state = :park if sub.x < -10
-    else
-      sub.x += 1
-      sub.state = :park if sub.x > 84
-    end
+    sub.x += sub[:flip_horizontally] ? -1 : 1
+    sub.state = :park if sub.x < -10 || sub.x > 84
   end
 end
 
@@ -233,13 +228,12 @@ def draw_subs args
   args.nokia.sprites << args.state.subs
 end
 
+def new_bomb_explosion args
+    { x: -10, y: 33, w: 10, h: 5, path: "sprites/explosion_0.png", flip_horizontally:  rand < 0.5, state: :park, start: args.state.game_tick_count }
+end
+
 def new_sub(args, coor_y, speed)
-  s = speed * 4
-  if rand < 0.5
-    { x: 84, y: coor_y, w: 10, h: 5, path: "sprites/sub_gray.png", s: s, flip_horizontally: true, state: :park, start: [0, 1, 3].sample * 30, hold: 30 + s * 3 }
-  else
-    { x: -10, y: coor_y, w: 10, h: 5, path: "sprites/sub_gray.png", s: s, flip_horizontally: false, state: :park, start: [0, 1, 3].sample * 30, hold: 30 + s * 3 }
-  end
+    { x: -10, y: coor_y, w: 10, h: 5, path: "sprites/sub_gray.png", s: speed * 4, flip_horizontally: rand < 0.5, state: :park, start: [0, 1, 3].sample * 30, hold: 30 + speed * 10 }
 end
 
 def set_defaults args
@@ -257,6 +251,7 @@ def set_defaults args
   args.state.game_paused = false
   args.state.game_tick_count = args.state.tick_count
   args.state.subs = 5.map { |i| new_sub(args, (i * 6) + 6, 5 - i)}
+  args.state.bomb_explosions = 10.map { |i| new_bomb_explosion args}
   args.state.sub_bombs = []
   args.state.sub_bomb_explosions = []
 end
