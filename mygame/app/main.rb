@@ -105,7 +105,7 @@ def tick_game_scene args
 end
 
 def game_loop args
-  move_ship_sprite args if args.state.tick_count.zmod? args.state.ship_speed # same as args.state.tick_count % args.state.ship_speed == 0
+  move_ship_sprite args if args.state.tick_count.zmod? args.state.ship.speed # same as args.state.tick_count % args.state.ship.speed == 0
   draw_ship_sprite args
   move_subs args if args.state.tick_count.zmod? 2
   release_sub_bomb args if args.state.tick_count.zmod? 60
@@ -123,14 +123,14 @@ def draw_stuff args
 end
 
 def move_ship_sprite args
-  args.state.ship_x -= 1 if args.nokia.keyboard.left
-  args.state.ship_x += 1 if args.nokia.keyboard.right
-  args.state.ship_x = 66 if args.state.ship_x > 66
-  args.state.ship_x = 1 if args.state.ship_x < 1
+  args.state.ship.x -= 1 if args.nokia.keyboard.left
+  args.state.ship.x += 1 if args.nokia.keyboard.right
+  args.state.ship.x = 66 if args.state.ship.x > 66
+  args.state.ship.x = 1 if args.state.ship.x < 1
 end
 
 def draw_ship_sprite args
-  args.nokia.sprites << { x: args.state.ship_x, y: 36, w: 17, h: 6, path: 'sprites/ship_gray.png' }
+  args.nokia.sprites << { x: args.state.ship.x, y: 36, w: 17, h: 6, path: 'sprites/ship_gray.png' }
 end
 
 def tick_game_over_scene args
@@ -191,6 +191,7 @@ def explode_sub_bombs args
     if bomb.y > 33
       args.state.sub_bombs = args.state.sub_bombs - [bomb]
       explode_bomb(args, bomb)
+      # if bomb.x 
     end
   end
 end
@@ -203,7 +204,7 @@ def release_sub_bomb args
   # check if a sub is on the move, if it is check if it's in a certain range on the x axis, maybe rng now to decide should it release a bomb to float up
   args.state.subs.each do |sub|
     next unless sub.state == :move && sub.x > 1 && sub.x < 81 # only a sub moving in this range can potentially attack the ship
-    release_bomb(args, sub) if rand < 0.15 && args.state.sub_bombs.length < 10
+    release_bomb(args, sub) if args.state.sub_bombs.length < args.state.sub_bombs_maximum && (rand < (sub.y == 30 ? 0.3 : 0.15))
   end
 end
 
@@ -245,13 +246,13 @@ def set_defaults args
   args.state.barrels = 6
   args.state.game_over = false
   args.state.bonus = false
-  args.state.ship_state = :alive
-  args.state.ship_speed = 4
-  args.state.ship_x = 33
+  args.state.ship.state = :alive
+  args.state.ship.speed = 4
+  args.state.ship.x = 33
   args.state.game_paused = false
+  args.state.sub_bombs_maximum = 10
   args.state.game_tick_count = args.state.tick_count
   args.state.subs = 5.map { |i| new_sub(args, (i * 6) + 6, 5 - i)}
   args.state.bomb_explosions = 10.map { |i| new_bomb_explosion args}
   args.state.sub_bombs = []
-  args.state.sub_bomb_explosions = []
 end
