@@ -109,7 +109,7 @@ def tick_game_scene args
     draw_stuff args
   end
 
-  if args.inputs.keyboard.key_up.space || args.inputs.keyboard.key_up.enter || args.state.ship.y < 30
+  if args.inputs.keyboard.key_up.space || args.inputs.keyboard.key_up.enter || args.state.ship.y < 30 || args.state.game_over == true
     args.state.ship.state = :sunk
     args.audio[:play].playtime = 0
     args.audio[:play].paused = true
@@ -235,7 +235,7 @@ def release_bomb(args, sub)
 end
 
 def explode_bomb(args, bomb)
-
+  
 end
 
 def move_single_sub(args, sub)
