@@ -203,7 +203,7 @@ def release_sub_bomb args
   # check if a sub is on the move, if it is check if it's in a certain range on the x axis, maybe rng now to decide should it release a bomb to float up
   args.state.subs.each do |sub|
     next unless sub.state == :move && sub.x > 1 && sub.x < 81 # only a sub moving in this range can potentially attack the ship
-    release_bomb(args, sub) if rand < 0.15
+    release_bomb(args, sub) if rand < 0.15 && args.state.sub_bombs.length < 10
   end
 end
 
