@@ -237,7 +237,7 @@ end
 def move_single_sub(args, sub)
   # multiple sprites inspiration from 03_rendering_sprites/01_animation_using_separate_pngs sample
   unless args.state.game_paused
-    sub.path = "sprites/sub_gray_#{sub.start.frame_index 4, sub.hold, true, args.state.game_tick_count}.png"
+    sub.path = "sprites/sub_gray_#{sub.start.frame_index 4, sub.hold, true, args.state.tick_count}.png"
     sub.x += sub[:flip_horizontally] ? -1 : 1
     sub.state = :park if sub.x < -10 || sub.x > 84
   end
