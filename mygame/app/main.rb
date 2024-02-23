@@ -40,6 +40,14 @@ def tick_title_scene args
     paused: true,                     # Set to true to pause the sound at the current playback position
     looping: true,                    # Set to true to loop the sound/music until you stop it
   }
+  args.audio[:lost] ||= {
+    input: 'sounds/you-lost.ogg',    # Filename
+    x: 0.0, y: 0.0, z: 0.0,           # Relative position to the listener, x, y, z from -1.0 to 1.0
+    gain: 0.9 ,                        # Volume (0.0 to 1.0)
+    pitch: 1.0,                       # Pitch of the sound (1.0 = original pitch)
+    paused: true,                     # Set to true to pause the sound at the current playback position
+    looping: false,                    # Set to true to loop the sound/music until you stop it
+  }
   # puts60 "sounds that are paused: #{args.audio.select { |_, sound| sound[:paused] == true }.length}"
   args.nokia.labels << { x: 43, y: 45, text: "DEPTH CHARGE", size_enum: NOKIA_FONT_SM, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
   args.nokia.labels << { x: 4, y: 38, text: "To move left or right", size_enum: NOKIA_FONT_TI, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
@@ -72,7 +80,7 @@ def tick_game_scene args
     draw_sub_bombs args
     draw_subs args
   else
-    args.audio[:play].paused = false
+    args.audio[:play].paused = false unless args.state.ship.state != :alive
     args.state.game_paused = false
   end
 
@@ -89,8 +97,13 @@ def tick_game_scene args
   end
 
   if args.state.game_paused == false && args.state.game_over == false
-    args.state.game_time -= 1
-    args.state.game_tick_count += 1
+    if args.state.ship.state == :alive
+      args.state.game_time -= 1
+      args.state.game_tick_count += 1
+    end
+    if args.state.ship.state == :hit
+
+    end
     game_loop args
   else
     args.audio[:play].paused = true
@@ -123,6 +136,7 @@ def draw_stuff args
 end
 
 def move_ship_sprite args
+  return unless args.state.ship.state == :alive
   args.state.ship.x -= 1 if args.nokia.keyboard.left
   args.state.ship.x += 1 if args.nokia.keyboard.right
   args.state.ship.x = 66 if args.state.ship.x > 66
@@ -190,8 +204,12 @@ def explode_sub_bombs args
   args.state.sub_bombs.each do |bomb|
     if bomb.y > 33
       args.state.sub_bombs = args.state.sub_bombs - [bomb]
+      if bomb.x >= args.state.ship.x + 1 && bomb.x <= args.state.ship.x + 14 && args.state.ship.state == :alive
+        args.state.ship.state = :hit
+        args.audio[:play].paused = true
+        args.audio[:lost].paused = false
+      end
       explode_bomb(args, bomb)
-      # if bomb.x 
     end
   end
 end
