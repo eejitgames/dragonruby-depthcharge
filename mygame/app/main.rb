@@ -130,6 +130,14 @@ def game_loop args
   move_barrels args
   draw_subs args
   unpark_subs args if args.state.tick_count.zmod? 300
+  show_barrels args
+end
+
+def show_barrels args
+  return if args.state.game_over || args.state.game_paused
+  args.state.barrels.select { |b| b[:state] == :park }.length.each do |i|
+    args.nokia.primitives << { x: i * 4 + 30, y: 44, w: 3, h: 2, path: :pixel, r: NOKIA_BG_COLOR.r, g: NOKIA_BG_COLOR.g, b: NOKIA_BG_COLOR.b}
+  end
 end
 
 def draw_stuff args
