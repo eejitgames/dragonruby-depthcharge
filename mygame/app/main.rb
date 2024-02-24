@@ -334,7 +334,7 @@ def set_defaults args
   args.state.game_over = false
   args.state.bonus = false
   args.state.ship.state = :alive
-  args.state.ship.speed = 8
+  args.state.ship.speed = 6
   args.state.ship.x = 33
   args.state.ship.y = 36
   args.state.game_paused = false
