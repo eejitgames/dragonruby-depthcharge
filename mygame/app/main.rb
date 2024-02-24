@@ -125,6 +125,9 @@ def game_loop args
   draw_sub_bombs args
   explode_sub_bombs args if args.state.tick_count.zmod? 60
   move_sub_bombs args if args.state.tick_count.zmod? 60
+  launch_barrels args
+  draw_barrels args
+  move_barrels args
   draw_subs args
   unpark_subs args if args.state.tick_count.zmod? 300
 end
@@ -132,11 +135,12 @@ end
 def draw_stuff args
   draw_ship_sprite args
   draw_sub_bombs args
+  draw_barrels args
   draw_subs args
 end
 
 def move_ship_sprite args
-  return unless args.state.ship.state == :alive
+  return unless args.state.ship.state == :alive && !args.nokia.keyboard.down
   args.state.ship.x -= 1 if args.nokia.keyboard.left
   args.state.ship.x += 1 if args.nokia.keyboard.right
   args.state.ship.x = 66 if args.state.ship.x > 66
@@ -159,6 +163,61 @@ def tick_game_over_scene args
     args.state.next_scene = :title_scene
     args.state.defaults_set = false
   end
+end
+
+def move_barrels args
+  return unless args.state.tick_count.zmod? 6
+  args.state.barrels.each do |barrel|
+    next if barrel.state == :park
+    case barrel.state
+    when :air
+      barrel.x -= barrel.offset * (barrel.flip_horizontally == true ? -1 : 1) 
+      barrel.y -= 1
+      if barrel.y < 39
+        barrel.offset = 0
+      end
+      if barrel.y < 37
+        if barrel.flip_horizontally == true
+          args.state.barrel_right = :none
+        else
+          args.state.barrel_left = :none
+        end
+        barrel.state = :water
+      end
+    when :water
+      # do stuff
+    end
+  end
+end
+
+def launch_barrels args 
+  return unless args.nokia.keyboard.down && args.state.ship.state == :alive && args.state.barrels.select { |b| b[:state] == :park }.length >= 1
+  if args.nokia.keyboard.left && args.state.barrel_left == :none 
+    args.state.barrel_left = :launched
+    args.state.barrels.each do |barrel|
+      if barrel.state == :park
+        barrel.x = args.state.ship.x - 4
+        barrel.state = :air
+        break
+      end
+    end  
+  end
+
+  if args.nokia.keyboard.right && args.state.barrel_right == :none
+    args.state.barrel_right = :launched
+    args.state.barrels.each do |barrel|
+      if barrel.state == :park
+        barrel.x = args.state.ship.x + 18
+        barrel.flip_horizontally = true
+        barrel.state = :air
+        break
+      end
+    end   
+  end
+end
+
+def draw_barrels args
+  args.nokia.primitives << args.state.barrels
 end
 
 def move_subs args
@@ -241,7 +300,7 @@ end
 def move_single_sub(args, sub)
   # multiple sprites inspiration from 03_rendering_sprites/01_animation_using_separate_pngs sample
   unless args.state.game_paused
-    sub.path = "sprites/sub_gray_#{sub.start.frame_index 4, sub.hold, true, args.state.tick_count}.png"
+    sub.path = "sprites/sub_gray_#{sub.start.frame_index frame_count: 4, hold_for: sub.hold, repeat: true}.png"
     sub.x += sub[:flip_horizontally] ? -1 : 1
     sub.state = :park if sub.x < -10 || sub.x > 84
   end
@@ -252,11 +311,15 @@ def draw_subs args
 end
 
 def new_bomb_explosion args
-    { x: -10, y: 33, w: 10, h: 5, path: "sprites/explosion_0.png", flip_horizontally:  rand < 0.5, state: :park, start: args.state.game_tick_count }
+  { x: -10, y: 33, w: 10, h: 5, path: "sprites/explosion_0.png", flip_horizontally:  rand < 0.5, state: :park, start: args.state.game_tick_count }
 end
 
 def new_sub(args, coor_y, speed)
-    { x: -10, y: coor_y, w: 10, h: 5, path: "sprites/sub_gray.png", s: speed * 4, flip_horizontally: rand < 0.5, state: :park, start: [0, 1, 3].sample * 30, hold: 30 + speed * 10 }
+  { x: -10, y: coor_y, w: 10, h: 5, path: "sprites/sub_gray.png", s: speed * 4, flip_horizontally: rand < 0.5, state: :park, start: [0, 1, 3].sample * 30, hold: 30 + speed * 10 }
+end
+
+def new_barrel args
+  { x: -10, y: 41, w: 3, h: 2, path: :pixel, r: NOKIA_BG_COLOR.r, g: NOKIA_BG_COLOR.g, b: NOKIA_BG_COLOR.b, angle: 0, state: :park, offset: 1 }
 end
 
 def set_defaults args
@@ -265,7 +328,7 @@ def set_defaults args
   args.state.bonus_time = 45.seconds
   args.state.score = 0
   args.state.barrels_maximum = 6
-  args.state.barrels = 6
+  args.state.barrels_remaining = 6
   args.state.game_over = false
   args.state.bonus = false
   args.state.ship.state = :alive
@@ -277,5 +340,8 @@ def set_defaults args
   args.state.game_tick_count = args.state.tick_count
   args.state.subs = 5.map { |i| new_sub(args, (i * 6) + 6, 5 - i)}
   args.state.bomb_explosions = 10.map { |i| new_bomb_explosion args}
+  args.state.barrels = args.state.barrels_maximum.map { |i| new_barrel args}
+  args.state.barrel_right = :none
+  args.state.barrel_left = :none
   args.state.sub_bombs = []
 end
