@@ -177,23 +177,25 @@ def move_barrels args
         barrel.offset = 0
       end
       if barrel.y < 37
-        if barrel.flip_horizontally == true
-          args.state.barrel_right = :none
-        else
-          args.state.barrel_left = :none
-        end
         barrel.state = :water
       end
     when :water
-      # do stuff
+      if barrel.y == 36
+        barrel.y = 34
+        barrel.r = NOKIA_FG_COLOR.r
+        barrel.g = NOKIA_FG_COLOR.g
+        barrel.b = NOKIA_FG_COLOR.b
+      else
+        barrel.y -= 1 if args.state.tick_count.zmod? 60
+      end
     end
   end
 end
 
 def launch_barrels args 
   return unless args.nokia.keyboard.down && args.state.ship.state == :alive && args.state.barrels.select { |b| b[:state] == :park }.length >= 1
-  if args.nokia.keyboard.left && args.state.barrel_left == :none 
-    args.state.barrel_left = :launched
+  if args.nokia.keyboard.left && ((args.state.tick_count - args.state.barrel_left) > 180) && args.state.ship.x > 6
+    args.state.barrel_left = args.state.tick_count
     args.state.barrels.each do |barrel|
       if barrel.state == :park
         barrel.x = args.state.ship.x - 4
@@ -203,8 +205,8 @@ def launch_barrels args
     end  
   end
 
-  if args.nokia.keyboard.right && args.state.barrel_right == :none
-    args.state.barrel_right = :launched
+  if args.nokia.keyboard.right && ((args.state.tick_count - args.state.barrel_right) > 180) && args.state.ship.x < 61
+    args.state.barrel_right = args.state.tick_count
     args.state.barrels.each do |barrel|
       if barrel.state == :park
         barrel.x = args.state.ship.x + 18
@@ -332,7 +334,7 @@ def set_defaults args
   args.state.game_over = false
   args.state.bonus = false
   args.state.ship.state = :alive
-  args.state.ship.speed = 4
+  args.state.ship.speed = 8
   args.state.ship.x = 33
   args.state.ship.y = 36
   args.state.game_paused = false
@@ -341,7 +343,7 @@ def set_defaults args
   args.state.subs = 5.map { |i| new_sub(args, (i * 6) + 6, 5 - i)}
   args.state.bomb_explosions = 10.map { |i| new_bomb_explosion args}
   args.state.barrels = args.state.barrels_maximum.map { |i| new_barrel args}
-  args.state.barrel_right = :none
-  args.state.barrel_left = :none
+  args.state.barrel_right = 0
+  args.state.barrel_left = 0
   args.state.sub_bombs = []
 end
