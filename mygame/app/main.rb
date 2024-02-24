@@ -127,15 +127,48 @@ def game_loop args
   move_sub_bombs args if args.state.tick_count.zmod? 60
   launch_barrels args
   draw_barrels args
+  check_barrels_hit_subs args
   move_barrels args
   draw_subs args
   unpark_subs args if args.state.tick_count.zmod? 300
   show_barrels args
 end
 
+def check_barrels_hit_subs args
+  # outer loop over non-parked subs
+  # inner loop over non-parked barrels
+  # once first barrel has registered a hit break out of inner loop
+  # if args.state.ship_one.intersect_rect? args.state.ship_two
+
+  a = args.state.subs.select { |s| s[:state] == :move }
+  b = args.state.barrels.select { |b| b[:state] == :water }
+  l = a.length
+  i = 0
+  # collision = args.state.terrain.find { |t| t.intersect_rect? args.state.player }
+  # collisions = @args_state.geometry.find_all_intersect_rect anc, @fish
+  while i < l
+    collision = args.state.barrels.find { |b| b.intersect_rect? a[i] }
+    if collision
+      puts "hit ! #{collision}"
+      a[i].state = :park
+      a[i].x = -10
+      collision.state = :park
+      collision.x = -10
+      collision.y = 41
+      collision.r = NOKIA_BG_COLOR.r
+      collision.g = NOKIA_BG_COLOR.g
+      collision.b = NOKIA_BG_COLOR.b
+      collision.angle = 0
+      args.state.score += 100
+    end
+    i += 1
+  end
+end
+
 def show_barrels args
   return if args.state.game_over || args.state.game_paused
-  args.state.barrels.select { |b| b[:state] == :park }.length.each do |i|
+  loop = (args.state.barrels.select { |b| b[:state] == :park }.length > 6 ? 6 : args.state.barrels.select { |b| b[:state] == :park }.length)
+  loop.each do |i|
     args.nokia.primitives << { x: i * 4 + 30, y: 44, w: 3, h: 2, path: :pixel, r: NOKIA_BG_COLOR.r, g: NOKIA_BG_COLOR.g, b: NOKIA_BG_COLOR.b}
   end
 end
@@ -211,6 +244,7 @@ def move_barrels args
       barrel.r = NOKIA_BG_COLOR.r
       barrel.g = NOKIA_BG_COLOR.g
       barrel.b = NOKIA_BG_COLOR.b
+      barrel.angle = 0
     end  
   end
 end
