@@ -161,7 +161,18 @@ def check_barrels_hit_subs args
       collision.flip_horizontally = false
       collision.offset = 1
       collision.angle = 0
-      args.state.score += 100
+      case a[i].y
+      when 30
+        args.state.score += 10
+      when 24
+        args.state.score += 20
+      when 18
+        args.state.score += 50
+      when 12
+        args.state.score += 80
+      when 6
+        args.state.score += 100
+      end
     end
     i += 1
   end
