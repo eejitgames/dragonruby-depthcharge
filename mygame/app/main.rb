@@ -158,6 +158,8 @@ def check_barrels_hit_subs args
       collision.r = NOKIA_BG_COLOR.r
       collision.g = NOKIA_BG_COLOR.g
       collision.b = NOKIA_BG_COLOR.b
+      collision.flip_horizontally = false
+      collision.offset = 1
       collision.angle = 0
       args.state.score += 100
     end
