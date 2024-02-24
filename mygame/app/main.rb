@@ -196,9 +196,13 @@ def move_barrels args
         end
       end
     end
-    if barrel.y < 0
+    if barrel.y < 0 
       barrel.y = 41
+      barrel.x = -10
       barrel.state = :park
+      barrel.r = NOKIA_BG_COLOR.r
+      barrel.g = NOKIA_BG_COLOR.g
+      barrel.b = NOKIA_BG_COLOR.b
     end  
   end
 end
