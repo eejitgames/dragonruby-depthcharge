@@ -188,7 +188,18 @@ def move_barrels args
       else
         barrel.y -= 1 if args.state.tick_count.zmod? 60
       end
+      if args.state.tick_count.zmod? 60
+        if barrel.flip_horizontally == true
+          barrel.angle -= 90
+        else
+          barrel.angle += 90 
+        end
+      end
     end
+    if barrel.y < 0
+      barrel.y = 41
+      barrel.state = :park
+    end  
   end
 end
 
@@ -296,7 +307,6 @@ def release_bomb(args, sub)
 end
 
 def explode_bomb(args, bomb)
-  
 end
 
 def move_single_sub(args, sub)
