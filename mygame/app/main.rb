@@ -368,9 +368,11 @@ def move_sub_bombs args
 end
 
 def explode_sub_bombs args
+  exploded_bombs = []
   args.state.sub_bombs.each do |bomb|
     if bomb.y > 33
-      args.state.sub_bombs = args.state.sub_bombs - [bomb]
+      bomb.x = -10
+      exploded_bombs << bomb
       if bomb.x >= args.state.ship.x + 1 && bomb.x <= args.state.ship.x + 14 && args.state.ship.state == :alive
         args.state.ship.state = :hit
         args.audio[:play].paused = true
@@ -379,6 +381,7 @@ def explode_sub_bombs args
       explode_bomb(args, bomb)
     end
   end
+  args.state.sub_bombs = args.state.sub_bombs - exploded_bombs
 end
 
 def draw_sub_bombs args
