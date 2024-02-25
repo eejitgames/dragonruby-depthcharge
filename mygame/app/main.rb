@@ -59,7 +59,7 @@ def tick_title_scene args
   args.audio[:bonus] ||= {
     input: 'sounds/bonus-count.ogg',  # Filename
     x: 0.0, y: 0.0, z: 0.0,           # Relative position to the listener, x, y, z from -1.0 to 1.0
-    gain: 0.7,                        # Volume (0.0 to 1.0)
+    gain: 0.5,                        # Volume (0.0 to 1.0)
     pitch: 1.0,                       # Pitch of the sound (1.0 = original pitch)
     paused: true,                     # Set to true to pause the sound at the current playback position
     looping: true,                    # Set to true to loop the sound/music until you stop it
@@ -150,7 +150,7 @@ def game_loop args
   move_barrels args
   draw_subs args
   unpark_subs args if args.state.tick_count.zmod? 300
-  show_barrels args
+  show_barrels args 
   show_sub_hit_count_bonus args
 end
 
@@ -221,7 +221,7 @@ def draw_stuff args
   draw_sub_bombs args
   draw_barrels args
   draw_subs args
-  show_barrels args
+  show_barrels args unless args.state.game_over
   show_sub_hit_count_bonus args
 end
 
@@ -266,6 +266,7 @@ def count_sub_hit_bonus args
   putz "bonus: #{args.state.sub_hit_count_bonus}, counter: #{args.state.sub_hit_count_bonus_counter}"
   if args.state.sub_hit_count_bonus_counter == args.state.sub_hit_count_bonus
     args.state.counting_bonus = false
+    args.state.game_over = true
     args.audio[:bonus].looping = false
   end
 end
@@ -392,7 +393,6 @@ def explode_sub_bombs args
   exploded_bombs = []
   args.state.sub_bombs.each do |bomb|
     if bomb.y > 33
-      bomb.x = -10
       exploded_bombs << bomb
       if bomb.x >= args.state.ship.x + 1 && bomb.x <= args.state.ship.x + 14 && args.state.ship.state == :alive
         args.state.ship.state = :hit
@@ -400,6 +400,7 @@ def explode_sub_bombs args
         args.audio[:lost].paused = false
       end
       explode_bomb(args, bomb)
+      bomb.x = -10
     end
   end
   args.state.sub_bombs = args.state.sub_bombs - exploded_bombs
