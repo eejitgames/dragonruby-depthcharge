@@ -35,7 +35,7 @@ def tick_title_scene args
   args.audio[:play] ||= {
     input: 'sounds/game-play.ogg',    # Filename
     x: 0.0, y: 0.0, z: 0.0,           # Relative position to the listener, x, y, z from -1.0 to 1.0
-    gain: 0.9 ,                       # Volume (0.0 to 1.0)
+    gain: 0.9,                        # Volume (0.0 to 1.0)
     pitch: 1.0,                       # Pitch of the sound (1.0 = original pitch)
     paused: true,                     # Set to true to pause the sound at the current playback position
     looping: true,                    # Set to true to loop the sound/music until you stop it
@@ -43,15 +43,15 @@ def tick_title_scene args
   args.audio[:lost] ||= {
     input: 'sounds/you-lost.ogg',     # Filename
     x: 0.0, y: 0.0, z: 0.0,           # Relative position to the listener, x, y, z from -1.0 to 1.0
-    gain: 0.9 ,                       # Volume (0.0 to 1.0)
+    gain: 0.9,                        # Volume (0.0 to 1.0)
     pitch: 1.0,                       # Pitch of the sound (1.0 = original pitch)
     paused: true,                     # Set to true to pause the sound at the current playback position
     looping: false,                   # Set to true to loop the sound/music until you stop it
   }
-  args.audio[:subhit] ||= {
+  args.audio[:sub] ||= {
     input: 'sounds/sub-hit.ogg',      # Filename
     x: 0.0, y: 0.0, z: 0.0,           # Relative position to the listener, x, y, z from -1.0 to 1.0
-    gain: 0.9 ,                       # Volume (0.0 to 1.0)
+    gain: 1.0,                        # Volume (0.0 to 1.0)
     pitch: 1.0,                       # Pitch of the sound (1.0 = original pitch)
     paused: true,                     # Set to true to pause the sound at the current playback position
     looping: false,                   # Set to true to loop the sound/music until you stop it
@@ -88,7 +88,7 @@ def tick_game_scene args
     draw_subs args
   else
     # putz "sounds playing: #{args.audio}"
-    args.audio[:play].paused = false unless args.state.ship.state != :alive || args.audio[:subhit].playtime != 0
+    args.audio[:play].paused = false unless args.state.ship.state != :alive || args.audio[:sub].playtime != 0
     args.state.game_paused = false
   end
 
@@ -153,7 +153,7 @@ def check_barrels_hit_subs args
   while i < l
     collision = args.state.barrels.find { |b| b.intersect_rect? a[i] }
     if collision
-      play_sub_hit_sound args
+      # play_sub_hit_sound args unless args.audio[:sub].paused == false
       args.state.sub_hit_count_bonus += 1
       a[i].state = :park
       a[i].x = -10
@@ -185,7 +185,7 @@ end
 
 def play_sub_hit_sound args
   args.audio[:play].paused = true if args.audio[:play].paused == false
-  args.audio[:subhit].paused = false if args.audio[:subhit].paused == true
+  args.audio[:sub].paused = false if args.audio[:sub].paused == true
   putz "sounds playing: #{args.audio}"
 end
 
