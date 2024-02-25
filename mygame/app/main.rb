@@ -128,7 +128,7 @@ def tick_game_scene args
   end
 
   if args.inputs.keyboard.key_up.escape || args.state.ship.y < 30 || args.state.game_over == true
-    args.state.counting_bonus = true unless args.state.ship.state == :sunk
+    args.state.counting_bonus = true unless args.state.ship.state == :sunk || args.state.sub_hit_count_bonus == 0
     args.state.game_over == true
     args.state.ship.state = :sunk
     args.audio[:play].playtime = 0
@@ -221,9 +221,9 @@ end
 def draw_stuff args
   draw_ship_sprite args
   draw_sub_bombs args
-  draw_barrels args
+  draw_barrels args unless args.state.game_over == true
   draw_subs args
-  show_barrels args unless args.state.game_over
+  show_barrels args unless args.state.game_over == true || args.state.sub_hit_count_bonus == 0
   show_sub_hit_count_bonus args
 end
 
