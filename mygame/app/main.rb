@@ -154,7 +154,7 @@ def check_barrels_hit_subs args
   while i < l
     collision = args.state.barrels.find { |b| b.intersect_rect? a[i] }
     if collision
-      play_sub_hit_sound args unless args.audio[:sub].paused == false
+      # play_sub_hit_sound args unless args.audio[:sub].paused == false
       args.state.sub_hit_count_bonus += 1
       if args.state.sub_hit_count_bonus > 42
         args.state.sub_hit_count_bonus = 42
@@ -190,10 +190,9 @@ end
 
 def play_sub_hit_sound args
   args.audio[:play].paused = true # if args.audio[:play].paused == false
-  # args.audio[:sub].paused = false # if args.audio[:sub].paused == true
+  args.audio[:sub].paused = false # if args.audio[:sub].paused == true
   putz "sounds playing: #{args.audio}"
 end
-
 
 def show_sub_hit_count_bonus args
   args.state.sub_hit_count_bonus.each do |i|
