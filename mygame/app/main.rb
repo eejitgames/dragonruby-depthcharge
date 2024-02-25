@@ -221,7 +221,7 @@ end
 def draw_stuff args
   draw_ship_sprite args
   draw_sub_bombs args
-  draw_barrels args unless args.state.game_over == true
+  draw_barrels args # unless args.state.game_over == true
   draw_subs args
   show_barrels args unless args.state.game_over == true || args.state.sub_hit_count_bonus == 0
   show_sub_hit_count_bonus args
@@ -431,7 +431,7 @@ def release_sub_bomb args
   # check if a sub is on the move, if it is check if it's in a certain range on the x axis, maybe rng now to decide should it release a bomb to float up
   args.state.subs.each do |sub|
     next unless sub.state == :move && sub.x > 1 && sub.x < 81 # only a sub moving in this range can potentially attack the ship
-    release_bomb(args, sub) if args.state.sub_bombs.length < args.state.sub_bombs_maximum && (rand < (sub.y == 30 ? 0.3 : 0.11))
+    release_bomb(args, sub) if args.state.sub_bombs.length < args.state.sub_bombs_maximum && (rand < (sub.y == 30 ? 0.2 : 0.11))
   end
 end
 
