@@ -132,24 +132,18 @@ def game_loop args
   draw_subs args
   unpark_subs args if args.state.tick_count.zmod? 300
   show_barrels args
+  show_sub_hit_count_bonus args
 end
 
 def check_barrels_hit_subs args
-  # outer loop over non-parked subs
-  # inner loop over non-parked barrels
-  # once first barrel has registered a hit break out of inner loop
-  # if args.state.ship_one.intersect_rect? args.state.ship_two
-
   a = args.state.subs.select { |s| s[:state] == :move }
   b = args.state.barrels.select { |b| b[:state] == :water }
   l = a.length
   i = 0
-  # collision = args.state.terrain.find { |t| t.intersect_rect? args.state.player }
-  # collisions = @args_state.geometry.find_all_intersect_rect anc, @fish
   while i < l
     collision = args.state.barrels.find { |b| b.intersect_rect? a[i] }
     if collision
-      puts "hit ! #{collision}"
+      args.state.sub_hit_count_bonus += 1
       a[i].state = :park
       a[i].x = -10
       collision.state = :park
@@ -172,9 +166,19 @@ def check_barrels_hit_subs args
         args.state.score += 80
       when 6
         args.state.score += 100
-      end
+      end 
     end
     i += 1
+  end
+end
+
+def show_sub_hit_count_bonus args
+  if args.state.sub_hit_count_bonus > 42
+    args.state.sub_hit_count_bonus = 42
+    args.state.score += 1000
+  end
+  args.state.sub_hit_count_bonus.each do |i|
+    args.nokia.primitives << { x: (i * 4 + 1 < 82 ? i * 4 + 1 : (i - 21) * 4 + 1) , y: (i < 21 ? 1 : 3), w: 2, h: 1, path: :pixel, r: NOKIA_FG_COLOR.r, g: NOKIA_FG_COLOR.g, b: NOKIA_FG_COLOR.b}
   end
 end
 
@@ -191,6 +195,7 @@ def draw_stuff args
   draw_sub_bombs args
   draw_barrels args
   draw_subs args
+  show_sub_hit_count_bonus args
 end
 
 def move_ship_sprite args
@@ -413,6 +418,7 @@ def set_defaults args
   args.state.subs = 5.map { |i| new_sub(args, (i * 6) + 6, 5 - i)}
   args.state.bomb_explosions = 10.map { |i| new_bomb_explosion args}
   args.state.barrels = args.state.barrels_maximum.map { |i| new_barrel args}
+  args.state.sub_hit_count_bonus = 0
   args.state.barrel_right = 0
   args.state.barrel_left = 0
   args.state.sub_bombs = []
