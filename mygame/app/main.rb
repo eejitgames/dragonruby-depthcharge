@@ -91,6 +91,7 @@ def tick_game_scene args
     args.audio[:play].paused = true
     args.state.game_paused = true
     args.nokia.labels << { x: 42, y: 47, text: "PAUSED", size_enum: NOKIA_FONT_SM, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH } unless args.state.game_over == true
+    draw_surface_explosions args
     draw_ship_sprite args
     draw_sub_bombs args
     draw_subs args
@@ -138,6 +139,7 @@ end
 
 def game_loop args
   move_ship_sprite args if args.state.tick_count.zmod? args.state.ship.speed # same as args.state.tick_count % args.state.ship.speed == 0
+  draw_surface_explosions args
   draw_ship_sprite args
   move_subs args if args.state.tick_count.zmod? 2
   release_sub_bomb args if args.state.tick_count.zmod? 60
@@ -385,6 +387,21 @@ def move_sub_bombs args
   end
 end
 
+def draw_surface_explosions args
+  # remove animations from the animation queue that have completed
+  # frame index will return nil once the animation has completed
+  args.state.explosion_queue.reject! { |f| !f.exploded_at.frame_index(4, 4, false) }
+  # process the animation queue
+  args.nokia.sprites << args.state.explosion_queue.each do |e|
+    number_of_frames = 4
+    hold_each_frame_for = 4
+    # use the exploded_at property and the frame_index function to determine when the animation should start
+    frame_index = e.exploded_at.frame_index(number_of_frames, hold_each_frame_for, false)
+    # take the explosion primitive and set the path variariable
+    e.path = "sprites/explosion_#{frame_index}.png"
+  end
+end
+
 def explode_sub_bombs args
   exploded_bombs = []
   args.state.sub_bombs.each do |bomb|
@@ -395,7 +412,11 @@ def explode_sub_bombs args
         args.audio[:play].paused = true
         args.audio[:lost].paused = false
       end
-      explode_bomb(args, bomb)
+      # mark the bomb as exploded
+      bomb.w = 5
+      bomb.h = 7
+      # queue the explosion by adding it to the explosion queue
+      args.state.explosion_queue << bomb.merge(exploded_at: args.state.tick_count)
       bomb.x = -10
     end
   end
@@ -416,9 +437,6 @@ end
 
 def release_bomb(args, sub)
   args.state.sub_bombs << { x: sub.x, y: sub.y, w: 2, h: 2, path: "sprites/bomb.png", flip_horizontally: sub.flip_horizontally }
-end
-
-def explode_bomb(args, bomb)
 end
 
 def move_single_sub(args, sub)
@@ -470,4 +488,5 @@ def set_defaults args
   args.state.barrel_right = 0
   args.state.barrel_left = 0
   args.state.sub_bombs = []
+  args.state.explosion_queue = []
 end
