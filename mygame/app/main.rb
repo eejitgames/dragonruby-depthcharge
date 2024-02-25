@@ -253,9 +253,6 @@ def tick_game_over_scene args
 end
 
 def count_sub_hit_bonus args
-  # args.state.sub_hit_count_bonus_counter = 0
-  # args.state.sub_hit_count_bonus = 0
-  # args.state.sub_hit_count_bonus.each do |i|
   args.audio[:bonus].paused = false
   i = args.state.sub_hit_count_bonus_counter
   args.nokia.primitives << { x: (i * 4 + 1 < 82 ? i * 4 + 1 : (i - 21) * 4 + 1) , y: (i < 21 ? 1 : 3), w: 2, h: 1, path: :pixel, r: NOKIA_BG_COLOR.r, g: NOKIA_BG_COLOR.g, b: NOKIA_BG_COLOR.b}
@@ -263,7 +260,6 @@ def count_sub_hit_bonus args
     args.state.sub_hit_count_bonus_counter += 1
     args.state.score += 30
   end
-  putz "bonus: #{args.state.sub_hit_count_bonus}, counter: #{args.state.sub_hit_count_bonus_counter}"
   if args.state.sub_hit_count_bonus_counter == args.state.sub_hit_count_bonus
     args.state.counting_bonus = false
     args.state.game_over = true
