@@ -258,6 +258,8 @@ def move_barrels args
       barrel.g = NOKIA_BG_COLOR.g
       barrel.b = NOKIA_BG_COLOR.b
       barrel.angle = 0
+      barrel.flip_horizontally = false
+      barrel.offset = 1
     end  
   end
 end
@@ -399,7 +401,6 @@ def set_defaults args
   args.state.bonus_time = 45.seconds
   args.state.score = 0
   args.state.barrels_maximum = 6
-  args.state.barrels_remaining = 6
   args.state.game_over = false
   args.state.bonus = false
   args.state.ship.state = :alive
