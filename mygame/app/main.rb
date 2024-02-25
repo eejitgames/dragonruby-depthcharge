@@ -56,6 +56,14 @@ def tick_title_scene args
     paused: true,                     # Set to true to pause the sound at the current playback position
     looping: false,                   # Set to true to loop the sound/music until you stop it
   }
+  args.audio[:bonus] ||= {
+    input: 'sounds/bonus-count.ogg',  # Filename
+    x: 0.0, y: 0.0, z: 0.0,           # Relative position to the listener, x, y, z from -1.0 to 1.0
+    gain: 0.7,                        # Volume (0.0 to 1.0)
+    pitch: 1.0,                       # Pitch of the sound (1.0 = original pitch)
+    paused: true,                     # Set to true to pause the sound at the current playback position
+    looping: true,                    # Set to true to loop the sound/music until you stop it
+  }
   # puts60 "sounds that are paused: #{args.audio.select { |_, sound| sound[:paused] == true }.length}"
   args.nokia.labels << { x: 43, y: 45, text: "DEPTH CHARGE", size_enum: NOKIA_FONT_SM, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
   args.nokia.labels << { x: 4, y: 38, text: "To move left or right", size_enum: NOKIA_FONT_TI, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
@@ -191,7 +199,7 @@ end
 def play_sub_hit_sound args
   args.audio[:play].paused = true # if args.audio[:play].paused == false
   args.audio[:sub].paused = false # if args.audio[:sub].paused == true
-  putz "sounds playing: #{args.audio}"
+  # putz "sounds playing: #{args.audio}"
 end
 
 def show_sub_hit_count_bonus args
@@ -235,6 +243,7 @@ def tick_game_over_scene args
   args.nokia.labels  << { x: 84, y: 47, text: "#{args.state.score}", size_enum: NOKIA_FONT_SM, alignment_enum: 2, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
   args.nokia.labels << { x: 42, y: 47, text: "GAME OVER", size_enum: NOKIA_FONT_SM, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH } unless args.state.counting_bonus == true
   draw_stuff args
+  count_sub_hit_bonus args unless args.state.sub_hit_count_bonus_counter == args.state.sub_hit_count_bonus
 
   if args.inputs.keyboard.key_up.space || args.inputs.keyboard.key_up.enter
     args.audio[:title].paused = false
@@ -244,8 +253,20 @@ def tick_game_over_scene args
 end
 
 def count_sub_hit_bonus args
-  args.state.sub_hit_count_bonus.each do |i|
-    args.nokia.primitives << { x: (i * 4 + 1 < 82 ? i * 4 + 1 : (i - 21) * 4 + 1) , y: (i < 21 ? 1 : 3), w: 2, h: 1, path: :pixel, r: NOKIA_FG_COLOR.r, g: NOKIA_FG_COLOR.g, b: NOKIA_FG_COLOR.b}
+  # args.state.sub_hit_count_bonus_counter = 0
+  # args.state.sub_hit_count_bonus = 0
+  # args.state.sub_hit_count_bonus.each do |i|
+  args.audio[:bonus].paused = false
+  i = args.state.sub_hit_count_bonus_counter
+  args.nokia.primitives << { x: (i * 4 + 1 < 82 ? i * 4 + 1 : (i - 21) * 4 + 1) , y: (i < 21 ? 1 : 3), w: 2, h: 1, path: :pixel, r: NOKIA_BG_COLOR.r, g: NOKIA_BG_COLOR.g, b: NOKIA_BG_COLOR.b}
+  if args.state.tick_count.zmod? 10
+    args.state.sub_hit_count_bonus_counter += 1
+    args.state.score += 30
+  end
+  putz "bonus: #{args.state.sub_hit_count_bonus}, counter: #{args.state.sub_hit_count_bonus_counter}"
+  if args.state.sub_hit_count_bonus_counter == args.state.sub_hit_count_bonus
+    args.state.counting_bonus = false
+    args.audio[:bonus].looping = false
   end
 end
 
