@@ -35,18 +35,26 @@ def tick_title_scene args
   args.audio[:play] ||= {
     input: 'sounds/game-play.ogg',    # Filename
     x: 0.0, y: 0.0, z: 0.0,           # Relative position to the listener, x, y, z from -1.0 to 1.0
-    gain: 0.9 ,                        # Volume (0.0 to 1.0)
+    gain: 0.9 ,                       # Volume (0.0 to 1.0)
     pitch: 1.0,                       # Pitch of the sound (1.0 = original pitch)
     paused: true,                     # Set to true to pause the sound at the current playback position
     looping: true,                    # Set to true to loop the sound/music until you stop it
   }
   args.audio[:lost] ||= {
-    input: 'sounds/you-lost.ogg',    # Filename
+    input: 'sounds/you-lost.ogg',     # Filename
     x: 0.0, y: 0.0, z: 0.0,           # Relative position to the listener, x, y, z from -1.0 to 1.0
-    gain: 0.9 ,                        # Volume (0.0 to 1.0)
+    gain: 0.9 ,                       # Volume (0.0 to 1.0)
     pitch: 1.0,                       # Pitch of the sound (1.0 = original pitch)
     paused: true,                     # Set to true to pause the sound at the current playback position
-    looping: false,                    # Set to true to loop the sound/music until you stop it
+    looping: false,                   # Set to true to loop the sound/music until you stop it
+  }
+  args.audio[:subhit] ||= {
+    input: 'sounds/sub-hit.ogg',      # Filename
+    x: 0.0, y: 0.0, z: 0.0,           # Relative position to the listener, x, y, z from -1.0 to 1.0
+    gain: 0.9 ,                       # Volume (0.0 to 1.0)
+    pitch: 1.0,                       # Pitch of the sound (1.0 = original pitch)
+    paused: true,                     # Set to true to pause the sound at the current playback position
+    looping: false,                   # Set to true to loop the sound/music until you stop it
   }
   # puts60 "sounds that are paused: #{args.audio.select { |_, sound| sound[:paused] == true }.length}"
   args.nokia.labels << { x: 43, y: 45, text: "DEPTH CHARGE", size_enum: NOKIA_FONT_SM, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
@@ -79,7 +87,8 @@ def tick_game_scene args
     draw_sub_bombs args
     draw_subs args
   else
-    args.audio[:play].paused = false unless args.state.ship.state != :alive
+    # putz "sounds playing: #{args.audio}"
+    args.audio[:play].paused = false unless args.state.ship.state != :alive || args.audio[:subhit].playtime != 0
     args.state.game_paused = false
   end
 
@@ -110,6 +119,7 @@ def tick_game_scene args
   end
 
   if args.inputs.keyboard.key_up.space || args.inputs.keyboard.key_up.enter || args.state.ship.y < 30 || args.state.game_over == true
+    args.state.game_over == true
     args.state.ship.state = :sunk
     args.audio[:play].playtime = 0
     args.audio[:play].paused = true
@@ -143,6 +153,7 @@ def check_barrels_hit_subs args
   while i < l
     collision = args.state.barrels.find { |b| b.intersect_rect? a[i] }
     if collision
+      play_sub_hit_sound args
       args.state.sub_hit_count_bonus += 1
       a[i].state = :park
       a[i].x = -10
@@ -171,6 +182,13 @@ def check_barrels_hit_subs args
     i += 1
   end
 end
+
+def play_sub_hit_sound args
+  args.audio[:play].paused = true if args.audio[:play].paused == false
+  args.audio[:subhit].paused = false if args.audio[:subhit].paused == true
+  putz "sounds playing: #{args.audio}"
+end
+
 
 def show_sub_hit_count_bonus args
   if args.state.sub_hit_count_bonus > 42
@@ -418,6 +436,7 @@ def set_defaults args
   args.state.subs = 5.map { |i| new_sub(args, (i * 6) + 6, 5 - i)}
   args.state.bomb_explosions = 10.map { |i| new_bomb_explosion args}
   args.state.barrels = args.state.barrels_maximum.map { |i| new_barrel args}
+  args.state.sub_hit_count_bonus_counter = 0
   args.state.sub_hit_count_bonus = 0
   args.state.barrel_right = 0
   args.state.barrel_left = 0
