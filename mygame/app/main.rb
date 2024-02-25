@@ -118,7 +118,8 @@ def tick_game_scene args
     draw_stuff args
   end
 
-  if args.inputs.keyboard.key_up.space || args.inputs.keyboard.key_up.enter || args.state.ship.y < 30 || args.state.game_over == true
+  if args.inputs.keyboard.key_up.escape || args.state.ship.y < 30 || args.state.game_over == true
+    args.state.counting_bonus = true unless args.state.ship.state == :sunk
     args.state.game_over == true
     args.state.ship.state = :sunk
     args.audio[:play].playtime = 0
@@ -153,8 +154,12 @@ def check_barrels_hit_subs args
   while i < l
     collision = args.state.barrels.find { |b| b.intersect_rect? a[i] }
     if collision
-      # play_sub_hit_sound args unless args.audio[:sub].paused == false
+      play_sub_hit_sound args unless args.audio[:sub].paused == false
       args.state.sub_hit_count_bonus += 1
+      if args.state.sub_hit_count_bonus > 42
+        args.state.sub_hit_count_bonus = 42
+        args.state.score += 1000
+      end
       a[i].state = :park
       a[i].x = -10
       collision.state = :park
@@ -184,17 +189,13 @@ def check_barrels_hit_subs args
 end
 
 def play_sub_hit_sound args
-  args.audio[:play].paused = true if args.audio[:play].paused == false
-  args.audio[:sub].paused = false if args.audio[:sub].paused == true
+  args.audio[:play].paused = true # if args.audio[:play].paused == false
+  # args.audio[:sub].paused = false # if args.audio[:sub].paused == true
   putz "sounds playing: #{args.audio}"
 end
 
 
 def show_sub_hit_count_bonus args
-  if args.state.sub_hit_count_bonus > 42
-    args.state.sub_hit_count_bonus = 42
-    args.state.score += 1000
-  end
   args.state.sub_hit_count_bonus.each do |i|
     args.nokia.primitives << { x: (i * 4 + 1 < 82 ? i * 4 + 1 : (i - 21) * 4 + 1) , y: (i < 21 ? 1 : 3), w: 2, h: 1, path: :pixel, r: NOKIA_FG_COLOR.r, g: NOKIA_FG_COLOR.g, b: NOKIA_FG_COLOR.b}
   end
@@ -213,6 +214,7 @@ def draw_stuff args
   draw_sub_bombs args
   draw_barrels args
   draw_subs args
+  show_barrels args
   show_sub_hit_count_bonus args
 end
 
@@ -232,13 +234,19 @@ end
 def tick_game_over_scene args
   args.nokia.labels  << { x: 1, y: 47, text: "#{(args.state.game_time/60).round}", size_enum: NOKIA_FONT_SM, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
   args.nokia.labels  << { x: 84, y: 47, text: "#{args.state.score}", size_enum: NOKIA_FONT_SM, alignment_enum: 2, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
-  args.nokia.labels << { x: 42, y: 47, text: "GAME OVER", size_enum: NOKIA_FONT_SM, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
+  args.nokia.labels << { x: 42, y: 47, text: "GAME OVER", size_enum: NOKIA_FONT_SM, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH } unless args.state.counting_bonus == true
   draw_stuff args
 
   if args.inputs.keyboard.key_up.space || args.inputs.keyboard.key_up.enter
     args.audio[:title].paused = false
     args.state.next_scene = :title_scene
     args.state.defaults_set = false
+  end
+end
+
+def count_sub_hit_bonus args
+  args.state.sub_hit_count_bonus.each do |i|
+    args.nokia.primitives << { x: (i * 4 + 1 < 82 ? i * 4 + 1 : (i - 21) * 4 + 1) , y: (i < 21 ? 1 : 3), w: 2, h: 1, path: :pixel, r: NOKIA_FG_COLOR.r, g: NOKIA_FG_COLOR.g, b: NOKIA_FG_COLOR.b}
   end
 end
 
@@ -438,6 +446,7 @@ def set_defaults args
   args.state.barrels = args.state.barrels_maximum.map { |i| new_barrel args}
   args.state.sub_hit_count_bonus_counter = 0
   args.state.sub_hit_count_bonus = 0
+  args.state.counting_bonus = false
   args.state.barrel_right = 0
   args.state.barrel_left = 0
   args.state.sub_bombs = []
