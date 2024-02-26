@@ -27,7 +27,7 @@ def tick_title_scene args
   args.audio[:title] ||= {
     input: 'sounds/title-theme.ogg',  # Filename
     x: 0.0, y: 0.0, z: 0.0,           # Relative position to the listener, x, y, z from -1.0 to 1.0
-    gain: 1.0,                        # Volume (0.0 to 1.0)
+    gain: 0.5,                        # Volume (0.0 to 1.0)
     pitch: 1.0,                       # Pitch of the sound (1.0 = original pitch)
     paused: false,                    # Set to true to pause the sound at the current playback position
     looping: true,                    # Set to true to loop the sound/music until you stop it
@@ -35,7 +35,7 @@ def tick_title_scene args
   args.audio[:play] ||= {
     input: 'sounds/game-play.ogg',    # Filename
     x: 0.0, y: 0.0, z: 0.0,           # Relative position to the listener, x, y, z from -1.0 to 1.0
-    gain: 0.9,                        # Volume (0.0 to 1.0)
+    gain: 0.4,                        # Volume (0.0 to 1.0)
     pitch: 1.0,                       # Pitch of the sound (1.0 = original pitch)
     paused: true,                     # Set to true to pause the sound at the current playback position
     looping: true,                    # Set to true to loop the sound/music until you stop it
@@ -43,15 +43,7 @@ def tick_title_scene args
   args.audio[:lost] ||= {
     input: 'sounds/you-lost.ogg',     # Filename
     x: 0.0, y: 0.0, z: 0.0,           # Relative position to the listener, x, y, z from -1.0 to 1.0
-    gain: 0.9,                        # Volume (0.0 to 1.0)
-    pitch: 1.0,                       # Pitch of the sound (1.0 = original pitch)
-    paused: true,                     # Set to true to pause the sound at the current playback position
-    looping: false,                   # Set to true to loop the sound/music until you stop it
-  }
-  args.audio[:sub] ||= {
-    input: 'sounds/sub-hit.ogg',      # Filename
-    x: 0.0, y: 0.0, z: 0.0,           # Relative position to the listener, x, y, z from -1.0 to 1.0
-    gain: 1.0,                        # Volume (0.0 to 1.0)
+    gain: 0.4,                        # Volume (0.0 to 1.0)
     pitch: 1.0,                       # Pitch of the sound (1.0 = original pitch)
     paused: true,                     # Set to true to pause the sound at the current playback position
     looping: false,                   # Set to true to loop the sound/music until you stop it
@@ -59,7 +51,7 @@ def tick_title_scene args
   args.audio[:bonus] ||= {
     input: 'sounds/bonus-count.ogg',  # Filename
     x: 0.0, y: 0.0, z: 0.0,           # Relative position to the listener, x, y, z from -1.0 to 1.0
-    gain: 0.5,                        # Volume (0.0 to 1.0)
+    gain: 0.3 ,                        # Volume (0.0 to 1.0)
     pitch: 1.0,                       # Pitch of the sound (1.0 = original pitch)
     paused: true,                     # Set to true to pause the sound at the current playback position
     looping: true,                    # Set to true to loop the sound/music until you stop it
@@ -96,8 +88,7 @@ def tick_game_scene args
     draw_sub_bombs args
     draw_subs args
   else
-    # putz "sounds playing: #{args.audio}"
-    args.audio[:play].paused = false unless args.state.ship.state != :alive || args.audio[:sub].playtime != 0
+    args.audio[:play].paused = false unless args.state.ship.state != :alive || args.state.game_over == true
     args.state.game_paused = false
   end
 
@@ -138,7 +129,7 @@ def tick_game_scene args
 end
 
 def game_loop args
-  move_ship_sprite args if args.state.tick_count.zmod? args.state.ship.speed # same as args.state.tick_count % args.state.ship.speed == 0
+  move_ship_sprite args if args.state.tick_count.zmod? args.state.ship.speed
   draw_surface_explosions args
   draw_ship_sprite args
   move_subs args if args.state.tick_count.zmod? 2
@@ -164,7 +155,7 @@ def check_barrels_hit_subs args
   while i < l
     collision = args.state.barrels.find { |b| b.intersect_rect? a[i] }
     if collision
-      # play_sub_hit_sound args unless args.audio[:sub].paused == false
+      play_sub_hit_sound args
       args.state.sub_hit_count_bonus += 1
       if args.state.sub_hit_count_bonus > 42
         args.state.sub_hit_count_bonus = 42
@@ -199,9 +190,15 @@ def check_barrels_hit_subs args
 end
 
 def play_sub_hit_sound args
-  args.audio[:play].paused = true # if args.audio[:play].paused == false
-  args.audio[:sub].paused = false # if args.audio[:sub].paused == true
-  # putz "sounds playing: #{args.audio}"
+  args.audio[:play].paused = true
+  args.audio[:sub] ||= {
+    input: 'sounds/sub-hit.ogg',      # Filename
+    x: 0.0, y: 0.0, z: 0.0,           # Relative position to the listener, x, y, z from -1.0 to 1.0
+    gain: 1.0,                        # Volume (0.0 to 1.0)
+    pitch: 1.0,                       # Pitch of the sound (1.0 = original pitch)
+    paused: false,                    # Set to true to pause the sound at the current playback position
+    looping: false,                   # Set to true to loop the sound/music until you stop it
+  }
 end
 
 def show_sub_hit_count_bonus args
@@ -355,13 +352,13 @@ def move_subs args
 end
 
 def unpark_subs args
-  # change this to start at the deepest water, also only unpark one seb, then return
   a = args.state.subs
   l = a.length
   i = 0
   while i < l
     if a[i].state == :park
-      break if i == 4 && rand < 0.2 # the topmost sub unparks less often
+      # the topmost sub unparks less often
+      break if i == 4 && rand < 0.2
       unpark_sub(args, a[i])
       break
     end
@@ -412,7 +409,6 @@ def explode_sub_bombs args
         args.audio[:play].paused = true
         args.audio[:lost].paused = false
       end
-      # mark the bomb as exploded
       bomb.w = 5
       bomb.h = 7
       # queue the explosion by adding it to the explosion queue
@@ -428,9 +424,8 @@ def draw_sub_bombs args
 end
 
 def release_sub_bomb args
-  # check if a sub is on the move, if it is check if it's in a certain range on the x axis, maybe rng now to decide should it release a bomb to float up
   args.state.subs.each do |sub|
-    next unless sub.state == :move && sub.x > 1 && sub.x < 81 # only a sub moving in this range can potentially attack the ship
+    next unless sub.state == :move && sub.x > 2 && sub.x < 80 # only a sub moving in this range can potentially attack the ship
     release_bomb(args, sub) if args.state.sub_bombs.length < args.state.sub_bombs_maximum && (rand < (sub.y == 30 ? 0.2 : 0.11))
   end
 end
