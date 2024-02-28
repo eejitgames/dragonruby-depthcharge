@@ -252,7 +252,7 @@ def tick_game_over_scene args
 end
 
 def count_sub_hit_bonus args
-  args.audio[:bonus].paused = false
+  args.audio[:bonus].paused = false unless args.audio[:test].nil?
   i = args.state.sub_hit_count_bonus_counter
   args.nokia.primitives << { x: (i * 4 + 1 < 82 ? i * 4 + 1 : (i - 21) * 4 + 1) , y: (i < 21 ? 1 : 3), w: 2, h: 1, path: :pixel, r: NOKIA_BG_COLOR.r, g: NOKIA_BG_COLOR.g, b: NOKIA_BG_COLOR.b}
   if args.state.tick_count.zmod? 10
@@ -262,7 +262,7 @@ def count_sub_hit_bonus args
   if args.state.sub_hit_count_bonus_counter == args.state.sub_hit_count_bonus
     args.state.counting_bonus = false
     args.state.game_over = true
-    args.audio[:bonus].looping = false
+    args.audio[:bonus].looping = false unless args.audio[:test].nil?
   end
 end
 
@@ -425,7 +425,7 @@ end
 
 def release_sub_bomb args
   args.state.subs.each do |sub|
-    next unless sub.state == :move && sub.x > 2 && sub.x < 80 # only a sub moving in this range can potentially attack the ship
+    next unless sub.state == :move && (2..80) === sub.x # only a sub moving in this range can potentially attack the ship
     release_bomb(args, sub) if args.state.sub_bombs.length < args.state.sub_bombs_maximum && (rand < (sub.y == 30 ? 0.2 : 0.11))
   end
 end
