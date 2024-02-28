@@ -426,7 +426,7 @@ end
 def release_sub_bomb args
   args.state.subs.each do |sub|
     next unless sub.state == :move && (2..80) === sub.x # only a sub moving in this range can potentially attack the ship
-    release_bomb(args, sub) if args.state.sub_bombs.length < args.state.sub_bombs_maximum && (rand < (sub.y == 30 ? 0.2 : 0.11))
+    release_bomb(args, sub) if args.state.sub_bombs.length < args.state.sub_bombs_maximum && (rand < (sub.y == 30 ? 0.3 : 0.1))
   end
 end
 
