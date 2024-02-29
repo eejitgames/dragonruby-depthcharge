@@ -51,7 +51,7 @@ def tick_title_scene args
   args.audio[:bonus] ||= {
     input: 'sounds/bonus-count.ogg',  # Filename
     x: 0.0, y: 0.0, z: 0.0,           # Relative position to the listener, x, y, z from -1.0 to 1.0
-    gain: 0.3 ,                        # Volume (0.0 to 1.0)
+    gain: 0.3,                        # Volume (0.0 to 1.0)
     pitch: 1.0,                       # Pitch of the sound (1.0 = original pitch)
     paused: true,                     # Set to true to pause the sound at the current playback position
     looping: true,                    # Set to true to loop the sound/music until you stop it
