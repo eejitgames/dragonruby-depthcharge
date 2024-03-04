@@ -121,11 +121,11 @@ def tick_game_scene args
   if args.inputs.keyboard.key_up.escape || args.state.ship.y < 30 || args.state.game_over == true
     args.state.counting_bonus = true unless args.state.ship.state == :sunk || args.state.sub_hit_count_bonus == 0
     args.state.game_over == true
-    args.state.ship.state = :sunk
+    args.state.ship.state = :over
+    args.state.ship.state = :sunk if args.state.ship.y < 30
     args.audio[:play].playtime = 0
     args.audio[:play].paused = true
     args.state.next_scene = :game_over_scene
-    putz "ship state: #{args.state.ship}"
   end
 end
 
@@ -431,7 +431,7 @@ end
 def release_sub_bomb args
   args.state.subs.each do |sub|
     next unless sub.state == :move && (2..80) === sub.x # only a sub moving in this range can potentially attack the ship
-    release_bomb(args, sub) if args.state.sub_bombs.length < args.state.sub_bombs_maximum && (rand < (sub.y == 30 ? 0.3 : 0.1))
+    release_bomb(args, sub) if args.state.sub_bombs.length < args.state.sub_bombs_maximum && (rand < (sub.y == 30 ? 0.4 : 0.07))
   end
 end
 
