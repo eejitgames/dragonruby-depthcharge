@@ -27,7 +27,7 @@ def tick_title_scene args
   args.audio[:title] ||= {
     input: 'sounds/title-theme.ogg',  # Filename
     x: 0.0, y: 0.0, z: 0.0,           # Relative position to the listener, x, y, z from -1.0 to 1.0
-    gain: 0.5,                        # Volume (0.0 to 1.0)
+    gain: 1.0,                        # Volume (0.0 to 1.0)
     pitch: 1.0,                       # Pitch of the sound (1.0 = original pitch)
     paused: false,                    # Set to true to pause the sound at the current playback position
     looping: true,                    # Set to true to loop the sound/music until you stop it
@@ -35,7 +35,7 @@ def tick_title_scene args
   args.audio[:play] ||= {
     input: 'sounds/game-play.ogg',    # Filename
     x: 0.0, y: 0.0, z: 0.0,           # Relative position to the listener, x, y, z from -1.0 to 1.0
-    gain: 0.4,                        # Volume (0.0 to 1.0)
+    gain: 1.0,                        # Volume (0.0 to 1.0)
     pitch: 1.0,                       # Pitch of the sound (1.0 = original pitch)
     paused: true,                     # Set to true to pause the sound at the current playback position
     looping: true,                    # Set to true to loop the sound/music until you stop it
@@ -43,7 +43,7 @@ def tick_title_scene args
   args.audio[:lost] ||= {
     input: 'sounds/you-lost.ogg',     # Filename
     x: 0.0, y: 0.0, z: 0.0,           # Relative position to the listener, x, y, z from -1.0 to 1.0
-    gain: 0.4,                        # Volume (0.0 to 1.0)
+    gain: 1.0,                        # Volume (0.0 to 1.0)
     pitch: 1.0,                       # Pitch of the sound (1.0 = original pitch)
     paused: true,                     # Set to true to pause the sound at the current playback position
     looping: false,                   # Set to true to loop the sound/music until you stop it
@@ -51,7 +51,7 @@ def tick_title_scene args
   args.audio[:bonus] ||= {
     input: 'sounds/bonus-count.ogg',  # Filename
     x: 0.0, y: 0.0, z: 0.0,           # Relative position to the listener, x, y, z from -1.0 to 1.0
-    gain: 0.3,                        # Volume (0.0 to 1.0)
+    gain: 1.0,                        # Volume (0.0 to 1.0)
     pitch: 1.0,                       # Pitch of the sound (1.0 = original pitch)
     paused: true,                     # Set to true to pause the sound at the current playback position
     looping: true,                    # Set to true to loop the sound/music until you stop it
@@ -252,7 +252,7 @@ def tick_game_over_scene args
 end
 
 def count_sub_hit_bonus args
-  args.audio[:bonus].paused = false unless args.audio[:test].nil?
+  args.audio[:bonus].paused = false unless args.audio[:bonus].nil?
   i = args.state.sub_hit_count_bonus_counter
   args.nokia.primitives << { x: (i * 4 + 1 < 82 ? i * 4 + 1 : (i - 21) * 4 + 1) , y: (i < 21 ? 1 : 3), w: 2, h: 1, path: :pixel, r: NOKIA_BG_COLOR.r, g: NOKIA_BG_COLOR.g, b: NOKIA_BG_COLOR.b}
   if args.state.tick_count.zmod? 10
@@ -262,7 +262,8 @@ def count_sub_hit_bonus args
   if args.state.sub_hit_count_bonus_counter == args.state.sub_hit_count_bonus
     args.state.counting_bonus = false
     args.state.game_over = true
-    args.audio[:bonus].looping = false unless args.audio[:test].nil?
+    args.audio[:bonus].looping = false unless args.audio[:bonus].nil?
+    args.audio[:bonus].gain = 0 unless args.audio[:bonus].nil?
   end
 end
 
