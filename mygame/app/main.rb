@@ -125,6 +125,7 @@ def tick_game_scene args
     args.audio[:play].playtime = 0
     args.audio[:play].paused = true
     args.state.next_scene = :game_over_scene
+    putz "ship state: #{args.state.ship}"
   end
 end
 
@@ -252,18 +253,21 @@ def tick_game_over_scene args
 end
 
 def count_sub_hit_bonus args
-  args.audio[:bonus].paused = false unless args.audio[:bonus].nil?
-  i = args.state.sub_hit_count_bonus_counter
-  args.nokia.primitives << { x: (i * 4 + 1 < 82 ? i * 4 + 1 : (i - 21) * 4 + 1) , y: (i < 21 ? 1 : 3), w: 2, h: 1, path: :pixel, r: NOKIA_BG_COLOR.r, g: NOKIA_BG_COLOR.g, b: NOKIA_BG_COLOR.b}
-  if args.state.tick_count.zmod? 15
-    args.state.sub_hit_count_bonus_counter += 1
-    args.state.score += 30
+  if args.state.ship.state != :sunk
+    args.audio[:bonus].paused = false unless args.audio[:bonus].nil?
+    i = args.state.sub_hit_count_bonus_counter
+    args.nokia.primitives << { x: (i * 4 + 1 < 82 ? i * 4 + 1 : (i - 21) * 4 + 1) , y: (i < 21 ? 1 : 3), w: 2, h: 1, path: :pixel, r: NOKIA_BG_COLOR.r, g: NOKIA_BG_COLOR.g, b: NOKIA_BG_COLOR.b}
+    if args.state.tick_count.zmod? 15
+      args.state.sub_hit_count_bonus_counter += 1
+      args.state.score += 30
+    end
+  else
+    args.state.sub_hit_count_bonus_counter = args.state.sub_hit_count_bonus
   end
   if args.state.sub_hit_count_bonus_counter == args.state.sub_hit_count_bonus
     args.state.counting_bonus = false
     args.state.game_over = true
     args.audio[:bonus].looping = false unless args.audio[:bonus].nil?
-    args.audio[:bonus].gain = 0 unless args.audio[:bonus].nil?
   end
 end
 
