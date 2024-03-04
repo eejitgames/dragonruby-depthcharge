@@ -255,7 +255,7 @@ def count_sub_hit_bonus args
   args.audio[:bonus].paused = false unless args.audio[:bonus].nil?
   i = args.state.sub_hit_count_bonus_counter
   args.nokia.primitives << { x: (i * 4 + 1 < 82 ? i * 4 + 1 : (i - 21) * 4 + 1) , y: (i < 21 ? 1 : 3), w: 2, h: 1, path: :pixel, r: NOKIA_BG_COLOR.r, g: NOKIA_BG_COLOR.g, b: NOKIA_BG_COLOR.b}
-  if args.state.tick_count.zmod? 10
+  if args.state.tick_count.zmod? 15
     args.state.sub_hit_count_bonus_counter += 1
     args.state.score += 30
   end
