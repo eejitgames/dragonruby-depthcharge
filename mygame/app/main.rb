@@ -250,6 +250,7 @@ end
 def tick_game_over_scene args
   args.nokia.labels  << { x: 1, y: 47, text: "#{(args.state.game_time/60).round}", size_enum: NOKIA_FONT_SM, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
   args.nokia.labels  << { x: 84, y: 47, text: "#{args.state.score}", size_enum: NOKIA_FONT_SM, alignment_enum: 2, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
+  args.state.counting_bonus = false if args.state.ship.state == :sunk
   args.nokia.labels << { x: 42, y: 47, text: "GAME OVER", size_enum: NOKIA_FONT_SM, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH } unless args.state.counting_bonus == true
   draw_stuff args
   count_sub_hit_bonus args unless args.state.sub_hit_count_bonus_counter == args.state.sub_hit_count_bonus
