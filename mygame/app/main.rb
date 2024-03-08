@@ -126,11 +126,11 @@ def tick_game_scene args
     draw_stuff args
   end
 
-  if args.inputs.keyboard.key_up.escape || args.state.ship.y < 30 || args.state.game_over == true
+  if args.inputs.keyboard.key_up.escape || args.state.ship.y < 30 + 47 || args.state.game_over == true
     args.state.counting_bonus = true unless args.state.ship.state == :sunk || args.state.sub_hit_count_bonus == 0
     args.state.game_over = true
     args.state.ship.state = :win
-    args.state.ship.state = :sunk if args.state.ship.y < 30
+    args.state.ship.state = :sunk if args.state.ship.y < 30 + 47
     args.audio[:win].paused = false if args.state.ship.state == :win unless args.audio[:win].nil?
     args.audio[:play].playtime = 0
     args.audio[:play].paused = true
@@ -219,7 +219,7 @@ end
 
 def show_barrels args
   return if args.state.game_over || args.state.game_paused
-  loop = (args.state.barrels.select { |b| b[:state] == :park }.length > 6 ? 10 : args.state.barrels.select { |b| b[:state] == :park }.length)
+  loop = (args.state.barrels.select { |b| b[:state] == :park }.length > 10 ? 10 : args.state.barrels.select { |b| b[:state] == :park }.length)
   loop.each do |i|
     args.nokia.primitives << { x: i * 4 + 22 + 42, y: 44 + 48, w: 3, h: 2, path: :pixel, r: NOKIA_BG_COLOR.r, g: NOKIA_BG_COLOR.g, b: NOKIA_BG_COLOR.b}
   end
@@ -421,7 +421,7 @@ end
 def explode_sub_bombs args
   exploded_bombs = []
   args.state.sub_bombs.each do |bomb|
-    if bomb.y > 33 + 48
+    if bomb.y > 33 + 47
       exploded_bombs << bomb
       if bomb.x >= args.state.ship.x + 1 && bomb.x <= args.state.ship.x + 14 && args.state.ship.state == :alive
         args.state.ship.state = :hit
@@ -480,7 +480,7 @@ end
 
 def set_defaults args
   args.state.defaults_set = true
-  args.state.game_time = 60.seconds
+  args.state.game_time = 600.seconds
   args.state.bonus_time = 45.seconds
   args.state.score = 0
   args.state.barrels_maximum = 10
