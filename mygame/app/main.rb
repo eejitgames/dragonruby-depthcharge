@@ -65,13 +65,13 @@ def tick_title_scene args
     looping: false,                   # Set to true to loop the sound/music until you stop it
   }
   # puts60 "sounds that are paused: #{args.audio.select { |_, sound| sound[:paused] == true }.length}"
-  args.nokia.labels << { x: 43, y: 45, text: "DEPTH CHARGE", size_enum: NOKIA_FONT_SM, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
-  args.nokia.labels << { x: 4, y: 38, text: "To move left or right", size_enum: NOKIA_FONT_TI, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
-  args.nokia.labels << { x: 4, y: 32, text: "use WASD or ARROWS", size_enum: NOKIA_FONT_TI, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
-  args.nokia.labels << { x: 4, y: 24, text: "Press down first to", size_enum: NOKIA_FONT_TI, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
-  args.nokia.labels << { x: 4, y: 18, text: "launch a depthcharge", size_enum: NOKIA_FONT_TI, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
-  args.nokia.labels << { x: 42, y: 9, text: "Let's Go !", size_enum: NOKIA_FONT_TI, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
-  args.nokia.borders << { x: 19, y: 3, w: 45, h: 8, a: 255 }
+  args.nokia.labels << { x: 43 + 42, y: 45 + 24, text: "DEPTH CHARGE", size_enum: NOKIA_FONT_SM, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
+  args.nokia.labels << { x: 4 + 42, y: 38 + 24, text: "To move left or right", size_enum: NOKIA_FONT_TI, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
+  args.nokia.labels << { x: 4 + 42, y: 32 + 24, text: "use WASD or ARROWS", size_enum: NOKIA_FONT_TI, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
+  args.nokia.labels << { x: 4 + 42, y: 24 + 24, text: "Press down first to", size_enum: NOKIA_FONT_TI, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
+  args.nokia.labels << { x: 4 + 42, y: 18 + 24, text: "launch a depthcharge", size_enum: NOKIA_FONT_TI, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
+  args.nokia.labels << { x: 42 + 42, y: 9 + 24, text: "Let's Go !", size_enum: NOKIA_FONT_TI, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
+  # args.nokia.borders << { x: 19, y: 3, w: 45, h: 8, a: 255 }
 
   if args.inputs.keyboard.key_up.space || args.inputs.keyboard.key_up.enter
     args.audio[:title].paused = true
@@ -84,13 +84,13 @@ end
 
 def tick_game_scene args
   args.state.score = 9999 if args.state.score > 9999
-  args.nokia.labels  << { x: 1, y: 47, text: "#{(args.state.game_time/60).round}", size_enum: NOKIA_FONT_SM, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
-  args.nokia.labels  << { x: 84, y: 47, text: "#{args.state.score}", size_enum: NOKIA_FONT_SM, alignment_enum: 2, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
+  args.nokia.labels  << { x: 1, y: 47 + 47, text: "#{(args.state.game_time/60).round}", size_enum: NOKIA_FONT_SM, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
+  args.nokia.labels  << { x: 84 * 2 , y: 47 + 47, text: "#{args.state.score}", size_enum: NOKIA_FONT_SM, alignment_enum: 2, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
 
   if !args.inputs.keyboard.has_focus && args.state.tick_count != 0
     args.audio[:play].paused = true
     args.state.game_paused = true
-    args.nokia.labels << { x: 42, y: 47, text: "PAUSED", size_enum: NOKIA_FONT_SM, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH } unless args.state.game_over == true
+    args.nokia.labels << { x: 42 + 42 , y: 47 + 47, text: "PAUSED", size_enum: NOKIA_FONT_SM, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH } unless args.state.game_over == true
     draw_surface_explosions args
     draw_ship_sprite args
     draw_sub_bombs args
@@ -219,9 +219,9 @@ end
 
 def show_barrels args
   return if args.state.game_over || args.state.game_paused
-  loop = (args.state.barrels.select { |b| b[:state] == :park }.length > 6 ? 6 : args.state.barrels.select { |b| b[:state] == :park }.length)
+  loop = (args.state.barrels.select { |b| b[:state] == :park }.length > 6 ? 10 : args.state.barrels.select { |b| b[:state] == :park }.length)
   loop.each do |i|
-    args.nokia.primitives << { x: i * 4 + 30, y: 44, w: 3, h: 2, path: :pixel, r: NOKIA_BG_COLOR.r, g: NOKIA_BG_COLOR.g, b: NOKIA_BG_COLOR.b}
+    args.nokia.primitives << { x: i * 4 + 22 + 42, y: 44 + 48, w: 3, h: 2, path: :pixel, r: NOKIA_BG_COLOR.r, g: NOKIA_BG_COLOR.g, b: NOKIA_BG_COLOR.b}
   end
 end
 
@@ -238,20 +238,21 @@ def move_ship_sprite args
   return unless args.state.ship.state == :alive && !args.nokia.keyboard.down
   args.state.ship.x -= 1 if args.nokia.keyboard.left
   args.state.ship.x += 1 if args.nokia.keyboard.right
-  args.state.ship.x = 66 if args.state.ship.x > 66
+  args.state.ship.x = 66 + 84 if args.state.ship.x > 66 + 84
   args.state.ship.x = 1 if args.state.ship.x < 1
 end
 
 def draw_ship_sprite args
   args.nokia.primitives << { x: args.state.ship.x, y: args.state.ship.y, w: 17, h: 6, path: 'sprites/ship_gray.png' }
-  args.nokia.primitives << { x: 0, y: 0, w: 84, h: 36, r: NOKIA_BG_COLOR.r, g: NOKIA_BG_COLOR.g, b: NOKIA_BG_COLOR.b, primitive_marker: :solid }
+  #args.nokia.primitives << { x: 0, y: 0, w: 84, h: 36, r: NOKIA_BG_COLOR.r, g: NOKIA_BG_COLOR.g, b: NOKIA_BG_COLOR.b, primitive_marker: :solid }
+  args.nokia.primitives << { x: 0, y: 0, w: 84 * 2, h: 36 + 47, r: NOKIA_BG_COLOR.r, g: NOKIA_BG_COLOR.g, b: NOKIA_BG_COLOR.b, primitive_marker: :solid }
 end
 
 def tick_game_over_scene args
   args.nokia.labels  << { x: 1, y: 47, text: "#{(args.state.game_time/60).round}", size_enum: NOKIA_FONT_SM, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
   args.nokia.labels  << { x: 84, y: 47, text: "#{args.state.score}", size_enum: NOKIA_FONT_SM, alignment_enum: 2, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
   args.state.counting_bonus = false if args.state.ship.state == :sunk
-  args.nokia.labels << { x: 42, y: 47, text: "GAME OVER", size_enum: NOKIA_FONT_SM, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH } unless args.state.counting_bonus == true
+  args.nokia.labels << { x: 42 + 42, y: 47 + 47, text: "GAME OVER", size_enum: NOKIA_FONT_SM, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH } unless args.state.counting_bonus == true
   draw_stuff args
   count_sub_hit_bonus args unless args.state.sub_hit_count_bonus_counter == args.state.sub_hit_count_bonus
 
@@ -289,23 +290,23 @@ def move_barrels args
     case barrel.state
     when :air
       barrel.x -= barrel.offset * (barrel.flip_horizontally == true ? -1 : 1) 
-      barrel.y -= 1
-      if barrel.y < 39
+      barrel.y -= 2
+      if barrel.y < 39 + 47
         barrel.offset = 0
       end
-      if barrel.y < 37
+      if barrel.y < 37 + 47
         barrel.state = :water
       end
     when :water
-      if barrel.y == 36
-        barrel.y = 34
+      if barrel.y == 36 + 47
+        barrel.y = 34 + 47
         barrel.r = NOKIA_FG_COLOR.r
         barrel.g = NOKIA_FG_COLOR.g
         barrel.b = NOKIA_FG_COLOR.b
       else
-        barrel.y -= 1 if args.state.tick_count.zmod? 60
+        barrel.y -= 1 if args.state.tick_count.zmod? 30
       end
-      if args.state.tick_count.zmod? 60
+      if args.state.tick_count.zmod? 30
         if barrel.flip_horizontally == true
           barrel.angle -= 90
         else
@@ -314,7 +315,7 @@ def move_barrels args
       end
     end
     if barrel.y < 0 
-      barrel.y = 41
+      barrel.y = 41 + 46
       barrel.x = -10
       barrel.state = :park
       barrel.r = NOKIA_BG_COLOR.r
@@ -333,6 +334,7 @@ def launch_barrels args
     args.state.barrel_left = args.state.tick_count
     args.state.barrels.each do |barrel|
       if barrel.state == :park
+        barrel.y = 41 + 46
         barrel.x = args.state.ship.x - 4
         barrel.state = :air
         break
@@ -340,10 +342,11 @@ def launch_barrels args
     end  
   end
 
-  if args.nokia.keyboard.right && ((args.state.tick_count - args.state.barrel_right) > 180) && args.state.ship.x < 61
+  if args.nokia.keyboard.right && ((args.state.tick_count - args.state.barrel_right) > 180) && args.state.ship.x < 61 + 84
     args.state.barrel_right = args.state.tick_count
     args.state.barrels.each do |barrel|
       if barrel.state == :park
+        barrel.y = 41 + 46
         barrel.x = args.state.ship.x + 18
         barrel.flip_horizontally = true
         barrel.state = :air
@@ -385,7 +388,7 @@ end
 def unpark_sub(args, sub)
   sub.state = :move
   if rand < 0.5
-    sub.x = 84
+    sub.x = 84 * 2
     sub.flip_horizontally = true
   else
     sub.x = -10
@@ -418,7 +421,7 @@ end
 def explode_sub_bombs args
   exploded_bombs = []
   args.state.sub_bombs.each do |bomb|
-    if bomb.y > 33
+    if bomb.y > 33 + 48
       exploded_bombs << bomb
       if bomb.x >= args.state.ship.x + 1 && bomb.x <= args.state.ship.x + 14 && args.state.ship.state == :alive
         args.state.ship.state = :hit
@@ -441,7 +444,7 @@ end
 
 def release_sub_bomb args
   args.state.subs.each do |sub|
-    next unless sub.state == :move && (2..80) === sub.x # only a sub moving in this range can potentially attack the ship
+    next unless sub.state == :move && (2..164) === sub.x # only a sub moving in this range can potentially attack the ship
     release_bomb(args, sub) if args.state.sub_bombs.length < args.state.sub_bombs_maximum && (rand < (sub.y == 30 ? 0.4 : 0.07))
   end
 end
@@ -455,7 +458,7 @@ def move_single_sub(args, sub)
   unless args.state.game_paused
     sub.path = "sprites/sub_gray_#{sub.start.frame_index frame_count: 4, hold_for: sub.hold, repeat: true}.png"
     sub.x += sub[:flip_horizontally] ? -1 : 1
-    sub.state = :park if sub.x < -10 || sub.x > 84
+    sub.state = :park if sub.x < -10 || sub.x > 84 * 2
   end
 end
 
@@ -468,11 +471,11 @@ def new_bomb_explosion args
 end
 
 def new_sub(args, coor_y, speed)
-  { x: -10, y: coor_y, w: 10, h: 5, path: "sprites/sub_gray.png", s: speed * 4, flip_horizontally: rand < 0.5, state: :park, start: [0, 1, 3].sample * 30, hold: 30 + speed * 10 }
+  { x: -10, y: coor_y, w: 10, h: 5, path: "sprites/sub_gray.png", s: speed * 2, flip_horizontally: rand < 0.5, state: :park, start: [0, 1, 3].sample * 30, hold: 30 + speed * 10 }
 end
 
 def new_barrel args
-  { x: -10, y: 41, w: 3, h: 2, path: :pixel, r: NOKIA_BG_COLOR.r, g: NOKIA_BG_COLOR.g, b: NOKIA_BG_COLOR.b, angle: 0, state: :park, offset: 1 }
+  { x: -10, y: 41 + 46 , w: 3, h: 2, path: :pixel, r: NOKIA_BG_COLOR.r, g: NOKIA_BG_COLOR.g, b: NOKIA_BG_COLOR.b, angle: 0, state: :park, offset: 1 }
 end
 
 def set_defaults args
@@ -480,13 +483,13 @@ def set_defaults args
   args.state.game_time = 60.seconds
   args.state.bonus_time = 45.seconds
   args.state.score = 0
-  args.state.barrels_maximum = 6
+  args.state.barrels_maximum = 10
   args.state.game_over = false
   args.state.bonus = false
   args.state.ship.state = :alive
-  args.state.ship.speed = 6
-  args.state.ship.x = 33
-  args.state.ship.y = 36
+  args.state.ship.speed = 5
+  args.state.ship.x = 33 + 42
+  args.state.ship.y = 36 + 47
   args.state.game_paused = false
   args.state.sub_bombs_maximum = 10
   args.state.game_tick_count = args.state.tick_count
