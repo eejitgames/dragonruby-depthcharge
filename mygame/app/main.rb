@@ -141,10 +141,10 @@ def game_loop args
   draw_surface_explosions args
   draw_ship_sprite args
   move_subs args if args.state.tick_count.zmod? 2
-  release_sub_bomb args if args.state.tick_count.zmod? 60
+  release_sub_bomb args if args.state.tick_count.zmod? 120
   draw_sub_bombs args
-  explode_sub_bombs args if args.state.tick_count.zmod? 60
-  move_sub_bombs args if args.state.tick_count.zmod? 60
+  explode_sub_bombs args if args.state.tick_count.zmod? 30
+  move_sub_bombs args if args.state.tick_count.zmod? 30
   launch_barrels args
   draw_barrels args
   check_barrels_hit_subs args
@@ -162,6 +162,7 @@ def check_barrels_hit_subs args
   i = 0
   while i < l
     collision = args.state.barrels.find { |b| b.intersect_rect? a[i] }
+    puts "sub y: #{a[i].y}"
     if collision
       play_sub_hit_sound args
       args.state.sub_hit_count_bonus += 1
@@ -181,16 +182,30 @@ def check_barrels_hit_subs args
       collision.offset = 1
       collision.angle = 0
       case a[i].y
-      when 30
+      when 72
         args.state.score += 10
-      when 24
+      when 66
         args.state.score += 20
-      when 18
+      when 60
         args.state.score += 50
-      when 12
-        args.state.score += 80
-      when 6
+      when 54
         args.state.score += 100
+      when 48
+        args.state.score += 110
+      when 42
+        args.state.score += 120
+      when 36
+        args.state.score += 150
+      when 30
+        args.state.score += 200
+      when 24
+        args.state.score += 250
+      when 18
+        args.state.score += 500
+      when 12
+        args.state.score += 750
+      when 6
+        args.state.score += 1000
       end 
     end
     i += 1
@@ -267,9 +282,9 @@ def count_sub_hit_bonus args
     args.audio[:bonus].paused = false unless args.audio[:bonus].nil?
     i = args.state.sub_hit_count_bonus_counter
     args.nokia.primitives << { x: (i * 4 + 1 < 82 ? i * 4 + 1 : (i - 21) * 4 + 1) , y: (i < 21 ? 1 : 3), w: 2, h: 1, path: :pixel, r: NOKIA_BG_COLOR.r, g: NOKIA_BG_COLOR.g, b: NOKIA_BG_COLOR.b}
-    if args.state.tick_count.zmod? 15
+    if args.state.tick_count.zmod? 5
       args.state.sub_hit_count_bonus_counter += 1
-      args.state.score += 30
+      args.state.score += 100
     end
   else
     args.state.sub_hit_count_bonus_counter = args.state.sub_hit_count_bonus
@@ -302,9 +317,9 @@ def move_barrels args
         barrel.g = NOKIA_FG_COLOR.g
         barrel.b = NOKIA_FG_COLOR.b
       else
-        barrel.y -= 1 if args.state.tick_count.zmod? 30
+        barrel.y -= 1 if args.state.tick_count.zmod? 20
       end
-      if args.state.tick_count.zmod? 30
+      if args.state.tick_count.zmod? 20
         if barrel.flip_horizontally == true
           barrel.angle -= 90
         else
@@ -327,7 +342,7 @@ def move_barrels args
 end
 
 def launch_barrels args 
-  #return unless args.nokia.keyboard.down && args.state.ship.state == :alive && args.state.barrels.select { |b| b[:state] == :park }.length >= 1
+  return unless args.nokia.keyboard.down && args.state.ship.state == :alive && args.state.barrels.select { |b| b[:state] == :park }.length >= 1
   if args.nokia.keyboard.left && ((args.state.tick_count - args.state.barrel_left) > 180) && args.state.ship.x > 6
     args.state.barrel_left = args.state.tick_count
     args.state.barrels.each do |barrel|
@@ -436,8 +451,8 @@ end
 
 def release_sub_bomb args
   args.state.subs.each do |sub|
-    next unless sub.state == :move && (2..164) === sub.x # only a sub moving in this range can potentially attack the ship
-    release_bomb(args, sub) if args.state.sub_bombs.length < args.state.sub_bombs_maximum && (rand < (sub.y == 30 ? 0.4 : 0.07))
+    next unless sub.state == :move && (12..154) === sub.x # only a sub moving in this range can potentially attack the ship
+    release_bomb(args, sub) if args.state.sub_bombs.length < args.state.sub_bombs_maximum && (rand < (sub.y == 30 ? 0.4 : 0.04))
   end
 end
 
@@ -471,21 +486,21 @@ end
 
 def set_defaults args
   args.state.defaults_set = true
-  args.state.game_time = 600.seconds
+  args.state.game_time = 60.seconds
   args.state.bonus_time = 45.seconds
   args.state.score = 0
   args.state.barrels_maximum = 8
   args.state.game_over = false
   args.state.bonus = false
   args.state.ship.state = :alive
-  args.state.ship.speed = 5
+  args.state.ship.speed = 4
   args.state.ship.x = 33 + 42
   args.state.ship.y = 36 + 47
   args.state.game_paused = false
-  args.state.sub_bombs_maximum = 10
+  args.state.sub_bombs_maximum = 15
   args.state.game_tick_count = args.state.tick_count
-  args.state.subs = 5.map { |i| new_sub(args, (i * 6) + 6, 5 - i)}
-  args.state.bomb_explosions = 10.map { |i| new_bomb_explosion args}
+  args.state.subs = 12.map { |i| new_sub(args, (i * 6) + 6, 12 - i)}
+  args.state.bomb_explosions = args.state.sub_bombs_maximum.map { |i| new_bomb_explosion args}
   args.state.barrels = args.state.barrels_maximum.map { |i| new_barrel args}
   args.state.sub_hit_count_bonus_counter = 0
   args.state.sub_hit_count_bonus = 0
