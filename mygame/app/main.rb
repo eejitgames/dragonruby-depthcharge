@@ -98,9 +98,10 @@ def tick_game_scene args
     args.state.game_paused = false
   end
 
-  if args.state.score >= 500 && args.state.bonus == false
-    args.state.bonus = true
+  if args.state.score >= args.state.bonus_threshold
+    args.state.bonus += 1
     args.state.game_time += args.state.bonus_time
+    args.state.bonus_threshold += 500 * args.state.bonus
   end
 
   if args.state.game_time < 0
@@ -186,25 +187,25 @@ def check_barrels_hit_subs args
       when 66
         args.state.score += 20
       when 60
-        args.state.score += 50
+        args.state.score += 40
       when 54
-        args.state.score += 100
+        args.state.score += 80
       when 48
-        args.state.score += 110
+        args.state.score += 100
       when 42
-        args.state.score += 120
+        args.state.score += 110
       when 36
-        args.state.score += 150
+        args.state.score += 120
       when 30
-        args.state.score += 200
+        args.state.score += 140
       when 24
-        args.state.score += 250
+        args.state.score += 180
       when 18
-        args.state.score += 500
+        args.state.score += 200
       when 12
-        args.state.score += 750
+        args.state.score += 250
       when 6
-        args.state.score += 1000
+        args.state.score += 500
       end 
     end
     i += 1
@@ -233,7 +234,7 @@ def show_barrels args
   return if args.state.game_over || args.state.game_paused
   loop = (args.state.barrels.select { |b| b[:state] == :park }.length > args.state.barrels_maximum ? args.state.barrels_maximum : args.state.barrels.select { |b| b[:state] == :park }.length)
   loop.each do |i|
-    args.nokia.primitives << { x: i * 4 + 22 + 46, y: 44 + 48, w: 3, h: 2, path: :pixel, r: NOKIA_BG_COLOR.r, g: NOKIA_BG_COLOR.g, b: NOKIA_BG_COLOR.b}
+    args.nokia.primitives << { x: i * 4 + 22 + 50, y: 44 + 48, w: 3, h: 2, path: :pixel, r: NOKIA_BG_COLOR.r, g: NOKIA_BG_COLOR.g, b: NOKIA_BG_COLOR.b}
   end
 end
 
@@ -488,9 +489,10 @@ def set_defaults args
   args.state.game_time = 60.seconds
   args.state.bonus_time = 45.seconds
   args.state.score = 0
-  args.state.barrels_maximum = 8
+  args.state.barrels_maximum = 6
   args.state.game_over = false
-  args.state.bonus = false
+  args.state.bonus = 0
+  args.state.bonus_threshold = 500
   args.state.ship.state = :alive
   args.state.ship.speed = 4
   args.state.ship.x = 33 + 42
