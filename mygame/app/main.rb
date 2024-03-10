@@ -162,7 +162,6 @@ def check_barrels_hit_subs args
   i = 0
   while i < l
     collision = args.state.barrels.find { |b| b.intersect_rect? a[i] }
-    puts "sub y: #{a[i].y}"
     if collision
       play_sub_hit_sound args
       args.state.sub_hit_count_bonus += 1
