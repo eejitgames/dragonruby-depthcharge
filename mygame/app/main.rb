@@ -4,7 +4,6 @@ $gtk.hide_cursor
 require 'app/nokia.rb'
 
 def tick args
-  # using both samples/99_genre_lowrez/nokia_3310 and samples/02_input_basics/07_managing_scenes (with some modification) as an initial sort of starting point/template
   args.state.current_scene ||= :title_scene
   current_scene = args.state.current_scene
 
@@ -25,46 +24,45 @@ end
 
 def tick_title_scene args
   args.audio[:title] ||= {
-    input: 'sounds/title-theme.ogg',  # Filename
-    x: 0.0, y: 0.0, z: 0.0,           # Relative position to the listener, x, y, z from -1.0 to 1.0
-    gain: 1.0,                        # Volume (0.0 to 1.0)
-    pitch: 1.0,                       # Pitch of the sound (1.0 = original pitch)
-    paused: false,                    # Set to true to pause the sound at the current playback position
-    looping: true,                    # Set to true to loop the sound/music until you stop it
+    input: 'sounds/title-theme.ogg',
+    x: 0.0, y: 0.0, z: 0.0,
+    gain: 1.0,
+    pitch: 1.0,
+    paused: false,
+    looping: true,
   }
   args.audio[:play] ||= {
-    input: 'sounds/game-play.ogg',    # Filename
-    x: 0.0, y: 0.0, z: 0.0,           # Relative position to the listener, x, y, z from -1.0 to 1.0
-    gain: 1.0,                        # Volume (0.0 to 1.0)
-    pitch: 1.0,                       # Pitch of the sound (1.0 = original pitch)
-    paused: true,                     # Set to true to pause the sound at the current playback position
-    looping: true,                    # Set to true to loop the sound/music until you stop it
+    input: 'sounds/game-play.ogg',
+    x: 0.0, y: 0.0, z: 0.0,
+    gain: 1.0,
+    pitch: 1.0,
+    paused: true,
+    looping: true,
   }
   args.audio[:lost] ||= {
-    input: 'sounds/you-lost.ogg',     # Filename
-    x: 0.0, y: 0.0, z: 0.0,           # Relative position to the listener, x, y, z from -1.0 to 1.0
-    gain: 1.0,                        # Volume (0.0 to 1.0)
-    pitch: 1.0,                       # Pitch of the sound (1.0 = original pitch)
-    paused: true,                     # Set to true to pause the sound at the current playback position
-    looping: false,                   # Set to true to loop the sound/music until you stop it
+    input: 'sounds/you-lost.ogg',
+    x: 0.0, y: 0.0, z: 0.0,
+    gain: 1.0,
+    pitch: 1.0,
+    paused: true,
+    looping: false,
   }
   args.audio[:bonus] ||= {
-    input: 'sounds/bonus-count.ogg',  # Filename
-    x: 0.0, y: 0.0, z: 0.0,           # Relative position to the listener, x, y, z from -1.0 to 1.0
-    gain: 1.0,                        # Volume (0.0 to 1.0)
-    pitch: 1.0,                       # Pitch of the sound (1.0 = original pitch)
-    paused: true,                     # Set to true to pause the sound at the current playback position
-    looping: true,                    # Set to true to loop the sound/music until you stop it
+    input: 'sounds/bonus-count.ogg',
+    x: 0.0, y: 0.0, z: 0.0,
+    gain: 1.0,
+    pitch: 1.0,
+    paused: true,
+    looping: true,
   }
     args.audio[:win] ||= {
-    input: 'sounds/you-won.ogg',      # Filename
-    x: 0.0, y: 0.0, z: 0.0,           # Relative position to the listener, x, y, z from -1.0 to 1.0
-    gain: 1.0,                        # Volume (0.0 to 1.0)
-    pitch: 1.0,                       # Pitch of the sound (1.0 = original pitch)
-    paused: true,                     # Set to true to pause the sound at the current playback position
-    looping: false,                   # Set to true to loop the sound/music until you stop it
+    input: 'sounds/you-won.ogg',
+    x: 0.0, y: 0.0, z: 0.0,
+    gain: 1.0,
+    pitch: 1.0,
+    paused: true,
+    looping: false,
   }
-  # puts60 "sounds that are paused: #{args.audio.select { |_, sound| sound[:paused] == true }.length}"
   args.nokia.labels << { x: 43 + 42, y: 45 + 24, text: "DEPTH CHARGE", size_enum: NOKIA_FONT_SM, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
   args.nokia.labels << { x: 4 + 42, y: 38 + 24, text: "To move left or right", size_enum: NOKIA_FONT_TI, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
   args.nokia.labels << { x: 4 + 42, y: 32 + 24, text: "use WASD or ARROWS", size_enum: NOKIA_FONT_TI, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
@@ -83,7 +81,7 @@ def tick_title_scene args
 end
 
 def tick_game_scene args
-  args.state.score = 9999 if args.state.score > 9999
+  args.state.score = 99999 if args.state.score > 99999
   args.nokia.labels  << { x: 1, y: 47 + 47, text: "#{(args.state.game_time/60).round}", size_enum: NOKIA_FONT_SM, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
   args.nokia.labels  << { x: 84 * 2 , y: 47 + 47, text: "#{args.state.score}", size_enum: NOKIA_FONT_SM, alignment_enum: 2, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
 
@@ -167,8 +165,8 @@ def check_barrels_hit_subs args
     if collision
       play_sub_hit_sound args
       args.state.sub_hit_count_bonus += 1
-      if args.state.sub_hit_count_bonus > 42
-        args.state.sub_hit_count_bonus = 42
+      if args.state.sub_hit_count_bonus > 84
+        args.state.sub_hit_count_bonus = 84
         args.state.score += 1000
       end
       a[i].state = :park
@@ -202,26 +200,26 @@ end
 def play_sub_hit_sound args
   args.audio[:play].paused = true
   args.audio[:sub] ||= {
-    input: 'sounds/sub-hit.ogg',      # Filename
-    x: 0.0, y: 0.0, z: 0.0,           # Relative position to the listener, x, y, z from -1.0 to 1.0
-    gain: 1.0,                        # Volume (0.0 to 1.0)
-    pitch: 1.0,                       # Pitch of the sound (1.0 = original pitch)
-    paused: false,                    # Set to true to pause the sound at the current playback position
-    looping: false,                   # Set to true to loop the sound/music until you stop it
+    input: 'sounds/sub-hit.ogg',
+    x: 0.0, y: 0.0, z: 0.0,
+    gain: 1.0,
+    pitch: 1.0,
+    paused: false,
+    looping: false,
   }
 end
 
 def show_sub_hit_count_bonus args
   args.state.sub_hit_count_bonus.each do |i|
-    args.nokia.primitives << { x: (i * 4 + 1 < 82 ? i * 4 + 1 : (i - 21) * 4 + 1) , y: (i < 21 ? 1 : 3), w: 2, h: 1, path: :pixel, r: NOKIA_FG_COLOR.r, g: NOKIA_FG_COLOR.g, b: NOKIA_FG_COLOR.b}
+    args.nokia.primitives << { x: (i * 4 + 1 < (82 + 84) ? i * 4 + 1 : (i - 42) * 4 + 1) , y: (i < 42 ? 1 : 3), w: 2, h: 1, path: :pixel, r: NOKIA_FG_COLOR.r, g: NOKIA_FG_COLOR.g, b: NOKIA_FG_COLOR.b}
   end
 end
 
 def show_barrels args
   return if args.state.game_over || args.state.game_paused
-  loop = (args.state.barrels.select { |b| b[:state] == :park }.length > 10 ? 10 : args.state.barrels.select { |b| b[:state] == :park }.length)
+  loop = (args.state.barrels.select { |b| b[:state] == :park }.length > args.state.barrels_maximum ? args.state.barrels_maximum : args.state.barrels.select { |b| b[:state] == :park }.length)
   loop.each do |i|
-    args.nokia.primitives << { x: i * 4 + 22 + 42, y: 44 + 48, w: 3, h: 2, path: :pixel, r: NOKIA_BG_COLOR.r, g: NOKIA_BG_COLOR.g, b: NOKIA_BG_COLOR.b}
+    args.nokia.primitives << { x: i * 4 + 22 + 46, y: 44 + 48, w: 3, h: 2, path: :pixel, r: NOKIA_BG_COLOR.r, g: NOKIA_BG_COLOR.g, b: NOKIA_BG_COLOR.b}
   end
 end
 
@@ -329,7 +327,7 @@ def move_barrels args
 end
 
 def launch_barrels args 
-  return unless args.nokia.keyboard.down && args.state.ship.state == :alive && args.state.barrels.select { |b| b[:state] == :park }.length >= 1
+  #return unless args.nokia.keyboard.down && args.state.ship.state == :alive && args.state.barrels.select { |b| b[:state] == :park }.length >= 1
   if args.nokia.keyboard.left && ((args.state.tick_count - args.state.barrel_left) > 180) && args.state.ship.x > 6
     args.state.barrel_left = args.state.tick_count
     args.state.barrels.each do |barrel|
@@ -404,16 +402,11 @@ def move_sub_bombs args
 end
 
 def draw_surface_explosions args
-  # remove animations from the animation queue that have completed
-  # frame index will return nil once the animation has completed
   args.state.explosion_queue.reject! { |f| !f.exploded_at.frame_index(4, 4, false) }
-  # process the animation queue
   args.nokia.sprites << args.state.explosion_queue.each do |e|
     number_of_frames = 4
     hold_each_frame_for = 4
-    # use the exploded_at property and the frame_index function to determine when the animation should start
     frame_index = e.exploded_at.frame_index(number_of_frames, hold_each_frame_for, false)
-    # take the explosion primitive and set the path variariable
     e.path = "sprites/explosion_#{frame_index}.png"
   end
 end
@@ -430,7 +423,6 @@ def explode_sub_bombs args
       end
       bomb.w = 5
       bomb.h = 7
-      # queue the explosion by adding it to the explosion queue
       args.state.explosion_queue << bomb.merge(exploded_at: args.state.tick_count)
       bomb.x = -10
     end
@@ -454,7 +446,6 @@ def release_bomb(args, sub)
 end
 
 def move_single_sub(args, sub)
-  # multiple sprites inspiration from 03_rendering_sprites/01_animation_using_separate_pngs sample
   unless args.state.game_paused
     sub.path = "sprites/sub_gray_#{sub.start.frame_index frame_count: 4, hold_for: sub.hold, repeat: true}.png"
     sub.x += sub[:flip_horizontally] ? -1 : 1
@@ -483,7 +474,7 @@ def set_defaults args
   args.state.game_time = 600.seconds
   args.state.bonus_time = 45.seconds
   args.state.score = 0
-  args.state.barrels_maximum = 10
+  args.state.barrels_maximum = 8
   args.state.game_over = false
   args.state.bonus = false
   args.state.ship.state = :alive
