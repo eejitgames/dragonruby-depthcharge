@@ -262,8 +262,8 @@ def draw_ship_sprite args
 end
 
 def tick_game_over_scene args
-  args.nokia.labels  << { x: 1, y: 47, text: "#{(args.state.game_time/60).round}", size_enum: NOKIA_FONT_SM, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
-  args.nokia.labels  << { x: 84, y: 47, text: "#{args.state.score}", size_enum: NOKIA_FONT_SM, alignment_enum: 2, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
+  args.nokia.labels  << { x: 1, y: 47 + 47, text: "#{(args.state.game_time/60).round}", size_enum: NOKIA_FONT_SM, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
+  args.nokia.labels  << { x: 84 * 2, y: 47 + 47, text: "#{args.state.score}", size_enum: NOKIA_FONT_SM, alignment_enum: 2, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
   args.state.counting_bonus = false if args.state.ship.state == :sunk
   args.nokia.labels << { x: 42 + 42, y: 47 + 47, text: "GAME OVER", size_enum: NOKIA_FONT_SM, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH } unless args.state.counting_bonus == true
   draw_stuff args
@@ -281,7 +281,7 @@ def count_sub_hit_bonus args
   if args.state.ship.state != :sunk
     args.audio[:bonus].paused = false unless args.audio[:bonus].nil?
     i = args.state.sub_hit_count_bonus_counter
-    args.nokia.primitives << { x: (i * 4 + 1 < 82 ? i * 4 + 1 : (i - 21) * 4 + 1) , y: (i < 21 ? 1 : 3), w: 2, h: 1, path: :pixel, r: NOKIA_BG_COLOR.r, g: NOKIA_BG_COLOR.g, b: NOKIA_BG_COLOR.b}
+    args.nokia.primitives << { x: (i * 4 + 1 < (82 + 84) ? i * 4 + 1 : (i - 42) * 4 + 1) , y: (i < 42 ? 1 : 3), w: 2, h: 1, path: :pixel, r: NOKIA_BG_COLOR.r, g: NOKIA_BG_COLOR.g, b: NOKIA_BG_COLOR.b}
     if args.state.tick_count.zmod? 5
       args.state.sub_hit_count_bonus_counter += 1
       args.state.score += 100
