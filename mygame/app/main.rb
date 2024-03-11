@@ -63,12 +63,13 @@ def tick_title_scene args
     paused: true,
     looping: false,
   }
-  args.nokia.labels << { x: 43 + 42, y: 45 + 24, text: "DEPTH CHARGE", size_enum: NOKIA_FONT_SM, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
-  args.nokia.labels << { x: 4 + 42, y: 38 + 24, text: "To move left or right", size_enum: NOKIA_FONT_TI, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
-  args.nokia.labels << { x: 4 + 42, y: 32 + 24, text: "use WASD or ARROWS", size_enum: NOKIA_FONT_TI, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
-  args.nokia.labels << { x: 4 + 42, y: 24 + 24, text: "Press down first to", size_enum: NOKIA_FONT_TI, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
-  args.nokia.labels << { x: 4 + 42, y: 18 + 24, text: "launch a depthcharge", size_enum: NOKIA_FONT_TI, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
-  args.nokia.labels << { x: 42 + 42, y: 9 + 24, text: "Let's Go !", size_enum: NOKIA_FONT_TI, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: TINY_NOKIA_FONT_PATH }
+  
+  args.nokia.labels << { x: 43 + 42, y: 45 + 24 + 20, text: "DEPTH CHARGE", size_enum: -1, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: ALT_NOKIA_FONT_PATH }
+  args.nokia.labels << { x: 4 + 33, y: 38 + 28, text: "To move left or right", size_enum: NOKIA_FONT_MD, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: ALT_NOKIA_FONT_PATH }
+  args.nokia.labels << { x: 4 + 35, y: 32 + 25, text: "use WASD or ARROWS", size_enum: NOKIA_FONT_MD, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: ALT_NOKIA_FONT_PATH }
+  args.nokia.labels << { x: 4 + 38, y: 24 + 22, text: "Press down first to", size_enum: NOKIA_FONT_MD, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: ALT_NOKIA_FONT_PATH }
+  args.nokia.labels << { x: 4 + 33, y: 18 + 20, text: "launch a depthcharge", size_enum: NOKIA_FONT_MD, alignment_enum: 0, r: 0, g: 0, b: 0, a: 255, font: ALT_NOKIA_FONT_PATH }
+  args.nokia.labels << { x: 42 + 44, y: 9 + 13, text: "Let's Go !", size_enum: NOKIA_FONT_MD, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255, font: NOKIA_FONT_PATH }
   # args.nokia.borders << { x: 19, y: 3, w: 45, h: 8, a: 255 }
 
   if args.inputs.keyboard.key_up.space || args.inputs.keyboard.key_up.enter
